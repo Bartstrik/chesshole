@@ -1,2 +1,2 @@
-# chess-
-my chess engine
+# chesshole
+my chess engine using raylib
