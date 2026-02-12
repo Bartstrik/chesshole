@@ -15,6 +15,8 @@ add_subdirectory(../third_party/raylib raylib_build)
 #source files
 target_sources(main PRIVATE
     src/main.cpp
+    src/chess.cpp
+    src/render.cpp
 )
 
 #header files

@@ -1,0 +1,36 @@
+#pragma once
+
+#include "raylib.h"
+#include <string>
+
+
+#define BOARD_WIDTH 420
+#define BOARD_HEIGHT 420
+
+#define CELL_WIDTH 50
+#define CELL_HEIGHT 50
+
+#define PIECE_WIDTH 40
+#define PIECE_HEIGHT 40
+
+#define CELL_PADDING_X ((CELL_WIDTH - PIECE_WIDTH) / 2)
+#define CELL_PADDING_Y ((CELL_HEIGHT - PIECE_HEIGHT) / 2)
+
+#define BOARD_PADDING_X ((BOARD_WIDTH - 8 * CELL_WIDTH) / 2)
+#define BOARD_PADDING_Y ((BOARD_HEIGHT - 8 * CELL_HEIGHT) / 2)
+
+Rectangle RectangleFromCell(std::string cell);
+
+class Window {
+    private:
+    int screenWidth, screenHeight;
+    Texture2D texture;
+
+    public:
+    Window(const int& screenWidth, const int& screenHeight);
+    ~Window();
+
+    void init();
+    void drawWindow(); 
+};
+
