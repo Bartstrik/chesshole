@@ -48,7 +48,7 @@ Rectangle RectangleFromCell(const Column& col, const Row& row) {
     return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
-Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height) }}
+Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height) };}
 
 Window::Window(const int& screenWidth, const int& screenHeight) {
     this->screenWidth = screenWidth;
