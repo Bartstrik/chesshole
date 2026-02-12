@@ -5,12 +5,12 @@
 #include <string>
 #include "render.hpp"
 
-enum playerColor {
+enum class PlayerColor {
     white,
     black
 };
 
-enum pieceName {
+enum class PieceName {
     pawn,
     bishop,
     knight,
@@ -19,29 +19,52 @@ enum pieceName {
     king
 };
 
+enum class Column {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+};
+
+enum class Row {
+    _1,
+    _2,
+    _3,
+    _4,
+    _5,
+    _6,
+    _7,
+    _8
+};
+
 class Piece {
     protected:
-    pieceName name;
-    uint8_t row, col;
-    playerColor player;
+    PieceName name;
+    Row row;
+    Column col;
+    PlayerColor player;
     
     public:
     Image pieceImage;
 
     Piece() = delete;
-    Piece(const pieceName& name, const uint8_t& row, const uint8_t& col, const playerColor& player, const std::string& pieceImagePath);
+    Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath);
     virtual ~Piece();
 
-    const pieceName getName();
-    void setName(const pieceName& name);
+    const PieceName getName();
+    void setName(const PieceName& name);
     
-    const uint8_t getRow();
-    void setRow(const uint8_t& row);
+    const Row getRow();
+    void setRow(const Row& row);
     
-    const uint8_t getCol();
-    void setCol(const uint8_t& col);
+    const Column getCol();
+    void setCol(const Column& col);
     
-    const playerColor getPlayer();
+    const PlayerColor getPlayer();
 };
 
 class Pawn : public Piece {
@@ -51,7 +74,7 @@ class Pawn : public Piece {
 
     public:
     Pawn() = delete;
-    Pawn(const uint8_t& row, const uint8_t& col, const playerColor& player, const std::string& pawnImagePath);
+    Pawn(const Column& col, const Row& row, const PlayerColor& player, const std::string& pawnImagePath);
     ~Pawn();
 };
 
@@ -59,7 +82,7 @@ class Pawn : public Piece {
 class Board {
     private:
     std::string history{};
-    playerColor turn = playerColor::white;
+    PlayerColor turn = PlayerColor::white;
 
     public:
     std::array<std::array<std::unique_ptr<Piece>, 8>, 8> board{};
@@ -70,5 +93,5 @@ class Board {
     virtual ~Board();
 
     const std::string getHistory();
-    const playerColor getTurn();
+    const PlayerColor getTurn();
 };

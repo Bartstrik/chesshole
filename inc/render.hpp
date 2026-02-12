@@ -19,7 +19,7 @@
 #define BOARD_PADDING_X ((BOARD_WIDTH - 8 * CELL_WIDTH) / 2)
 #define BOARD_PADDING_Y ((BOARD_HEIGHT - 8 * CELL_HEIGHT) / 2)
 
-Rectangle RectangleFromCell(std::string cell);
+Rectangle RectangleFromCell(std::string& cell);
 
 class Window {
     private:

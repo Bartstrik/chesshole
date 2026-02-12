@@ -2,7 +2,7 @@
 #include "assert.h"
 
 //Piece Class
-Piece::Piece(const pieceName& name, const uint8_t& row, const uint8_t& col, const playerColor& player, const std::string& pieceImagePath) {
+Piece::Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath) {
     assert(!pieceImagePath.empty());
     pieceImage = LoadImage(pieceImagePath.c_str());
     ImageResize(&pieceImage, PIECE_WIDTH, PIECE_HEIGHT);
@@ -15,20 +15,20 @@ Piece::Piece(const pieceName& name, const uint8_t& row, const uint8_t& col, cons
 
 Piece::~Piece() {}
 
-const pieceName Piece::getName() {return name;}
-void Piece::setName(const pieceName& name) {this->name = name;}
+const PieceName Piece::getName() {return name;}
+void Piece::setName(const PieceName& name) {this->name = name;}
 
-const uint8_t Piece::getRow() {return row;}
-void Piece::setRow(const uint8_t& row) {this->row = row;}
+const Row Piece::getRow() {return row;}
+void Piece::setRow(const Row& row) {this->row = row;}
 
-const uint8_t Piece::getCol() {return col;}
-void Piece::setCol(const uint8_t& col) {this->col = col;}
+const Column Piece::getCol() {return col;}
+void Piece::setCol(const Column& col) {this->col = col;}
 
-const playerColor Piece::getPlayer() {return player;}
+const PlayerColor Piece::getPlayer() {return player;}
 
 
 //Pawn Class
-Pawn::Pawn(const uint8_t& row, const uint8_t& col, const playerColor& player, const std::string& pawnImagePath) : Piece(pieceName::pawn, row, col, player, pawnImagePath) {}
+Pawn::Pawn(const Column& col, const Row& row, const PlayerColor& player, const std::string& pawnImagePath) : Piece(PieceName::pawn, col, row, player, pawnImagePath) {}
 
 Pawn::~Pawn() {}
 
@@ -43,4 +43,4 @@ Board::Board(const std::string& boardImagePath) {
 Board::~Board() {} 
 
 const std::string Board::getHistory() {return history;}
-const playerColor Board::getTurn() {return turn;}
+const PlayerColor Board::getTurn() {return turn;}

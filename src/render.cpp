@@ -35,6 +35,21 @@ Rectangle RectangleFromCell(std::string cell) {
     return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
+Rectangle RectangleFromCell(const Column& col, const Row& row) {
+    auto temp = static_cast<uint8_t>(col);
+    assert(temp >= 0 && temp < 8);
+
+    temp = static_cast<uint8_t>(row);
+    assert(temp >= 0 && temp < 8);
+
+    //creating the rectangle type
+    float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
+    float y = (7 - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
+    return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
+}
+
+Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height) }}
+
 Window::Window(const int& screenWidth, const int& screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
@@ -51,24 +66,26 @@ void Window::init() {
 
     Board board("../../img/board.png");
 
-    Pawn pawn1(0, 0, playerColor::black, "../../img/pawn1.png");
+    Pawn pawn1(Column::A, Row::_2, PlayerColor::white, "../../img/pawn1.png");
+    Pawn pawn2(Column::B, Row::_2, PlayerColor::white, "../../img/pawn1.png");
 
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("A2"), WHITE);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("B2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H2"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("A7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("B7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G7"), BLACK);
-    ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H7"), BLACK);
+    ImageDraw(&board.boardImage, pawn1.pieceImage, baseRectangleFromImage(pawn1.pieceImage), RectangleFromCell(pawn1.getCol(), pawn1.getRow()), WHITE);
+    ImageDraw(&board.boardImage, pawn2.pieceImage, baseRectangleFromImage(pawn2.pieceImage), RectangleFromCell(pawn2.getCol(), pawn2.getRow()), WHITE);
+    
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H2"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("A7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("B7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G7"), BLACK);
+    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H7"), BLACK);
     UnloadImage(pawn1.pieceImage);
     
     texture = LoadTextureFromImage(board.boardImage);
