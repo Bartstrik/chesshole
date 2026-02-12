@@ -1,5 +1,6 @@
 #include "render.hpp"
 #include <iostream>
+#include <memory>
 #include "assert.h"
 #include "chess.hpp"
 
@@ -69,9 +70,21 @@ void Window::init() {
     Pawn pawn1(Column::A, Row::_2, PlayerColor::white, "../../img/pawn1.png");
     Pawn pawn2(Column::B, Row::_2, PlayerColor::white, "../../img/pawn1.png");
 
-    ImageDraw(&board.boardImage, pawn1.pieceImage, baseRectangleFromImage(pawn1.pieceImage), RectangleFromCell(pawn1.getCol(), pawn1.getRow()), WHITE);
-    ImageDraw(&board.boardImage, pawn2.pieceImage, baseRectangleFromImage(pawn2.pieceImage), RectangleFromCell(pawn2.getCol(), pawn2.getRow()), WHITE);
+    board.cells[static_cast<uint8_t>(pawn1.getCol())][static_cast<uint8_t>(pawn1.getRow())] = std::make_unique<Piece>(pawn1);
+    board.cells[static_cast<uint8_t>(pawn2.getCol())][static_cast<uint8_t>(pawn2.getRow())] = std::make_unique<Piece>(pawn2);
+
+
+    for (uint8_t col_iter = static_cast<uint8_t>(Column::A); col_iter <= static_cast<uint8_t>(Column::H); col_iter++) {
+        for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
+            if (board.cells[col_iter][row_iter] != nullptr) {
+                std::unique_ptr<Piece>& piece = board.cells[col_iter][row_iter];
+                ImageDraw(&board.boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+            }
+        }
+    }
     
+
+
     // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C2"), BLACK);
     // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D2"), BLACK);
     // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E2"), BLACK);

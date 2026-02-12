@@ -78,14 +78,14 @@ class Pawn : public Piece {
     ~Pawn();
 };
 
-//maybe make functions to adjust board/boardimage instead of having it public
+//maybe make functions to adjust cells/boardimage instead of having it public
 class Board {
     private:
     std::string history{};
     PlayerColor turn = PlayerColor::white;
 
     public:
-    std::array<std::array<std::unique_ptr<Piece>, 8>, 8> board{};
+    std::array<std::array<std::unique_ptr<Piece>, 8>, 8> cells{};
     Image boardImage;
 
     Board() = delete;
