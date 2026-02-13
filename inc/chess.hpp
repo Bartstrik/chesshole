@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 #include <string>
-#include "render.hpp"
+#include "raylib.h"
 
 enum class PlayerColor {
     white,
@@ -19,6 +19,7 @@ enum class PieceName {
     king
 };
 
+//maybe go back to weakly defined enums, so i don't have to typecast it
 enum class Column {
     A,
     B,
@@ -86,7 +87,7 @@ class Board {
 
     public:
     std::array<std::array<std::unique_ptr<Piece>, 8>, 8> cells{};
-    Image boardImage;
+    Image originalBoardImage, boardImage;
 
     Board() = delete;
     Board(const std::string& boardImagePath);

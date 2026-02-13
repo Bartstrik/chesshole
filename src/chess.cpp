@@ -1,5 +1,6 @@
 #include "chess.hpp"
 #include "assert.h"
+#include "common.hpp"
 
 //Piece Class
 Piece::Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath) {
@@ -36,8 +37,8 @@ Pawn::~Pawn() {}
 //Board Class
 Board::Board(const std::string& boardImagePath) {
     assert(!boardImagePath.empty());
-    boardImage = LoadImage(boardImagePath.c_str());
-    ImageResize(&boardImage, 8 * CELL_WIDTH + 2 * BOARD_PADDING_X, 8 * CELL_HEIGHT + 2 * BOARD_PADDING_Y);
+    originalBoardImage = LoadImage(boardImagePath.c_str());
+    ImageResize(&originalBoardImage, 8 * CELL_WIDTH + 2 * BOARD_PADDING_X, 8 * CELL_HEIGHT + 2 * BOARD_PADDING_Y);
 }
 
 Board::~Board() {} 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 #include "assert.h"
-#include "chess.hpp"
+#include "common.hpp"
 
 Rectangle RectangleFromCell(std::string cell) {
     assert(cell.size() == 2);
@@ -51,7 +51,12 @@ Rectangle RectangleFromCell(const Column& col, const Row& row) {
 
 Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height) };}
 
-Window::Window(const int& screenWidth, const int& screenHeight) {
+
+
+
+
+
+Window::Window(const int& screenWidth, const int& screenHeight) : board("../../img/board.png") {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
 }
@@ -63,47 +68,7 @@ Window::~Window() {
 }
 
 void Window::init() {
-    InitWindow(screenWidth, screenHeight, "");
-
-    Board board("../../img/board.png");
-
-    Pawn pawn1(Column::A, Row::_2, PlayerColor::white, "../../img/pawn1.png");
-    Pawn pawn2(Column::B, Row::_2, PlayerColor::white, "../../img/pawn1.png");
-
-    board.cells[static_cast<uint8_t>(pawn1.getCol())][static_cast<uint8_t>(pawn1.getRow())] = std::make_unique<Piece>(pawn1);
-    board.cells[static_cast<uint8_t>(pawn2.getCol())][static_cast<uint8_t>(pawn2.getRow())] = std::make_unique<Piece>(pawn2);
-
-
-    for (uint8_t col_iter = static_cast<uint8_t>(Column::A); col_iter <= static_cast<uint8_t>(Column::H); col_iter++) {
-        for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
-            if (board.cells[col_iter][row_iter] != nullptr) {
-                std::unique_ptr<Piece>& piece = board.cells[col_iter][row_iter];
-                ImageDraw(&board.boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
-            }
-        }
-    }
-    
-
-
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H2"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("A7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("B7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("C7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("D7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("E7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("F7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("G7"), BLACK);
-    // ImageDraw(&board.boardImage, pawn1.pieceImage, Rectangle{0, 0, static_cast<float>(pawn1.pieceImage.width), static_cast<float>(pawn1.pieceImage.height) }, RectangleFromCell("H7"), BLACK);
-    UnloadImage(pawn1.pieceImage);
-    
-    texture = LoadTextureFromImage(board.boardImage);
-    UnloadImage(board.boardImage);
-
+    InitWindow(screenWidth, screenHeight, "Chesshole");
     SetTargetFPS(60);
 }
 
@@ -114,4 +79,30 @@ void Window::drawWindow() {
         DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
 
     EndDrawing();
+}
+
+//should really happen in the chess.hpp file
+void Window::addPieces() {
+    //should make this pick a random image from the pieces folder instead of hardcoding it
+    Pawn pawn1(Column::A, Row::_2, PlayerColor::white, "../../img/pawn1.png");
+    Pawn pawn2(Column::B, Row::_2, PlayerColor::white, "../../img/pawn1.png");
+
+    board.cells[static_cast<uint8_t>(pawn1.getCol())][static_cast<uint8_t>(pawn1.getRow())] = std::make_unique<Piece>(pawn1);
+    board.cells[static_cast<uint8_t>(pawn2.getCol())][static_cast<uint8_t>(pawn2.getRow())] = std::make_unique<Piece>(pawn2);
+
+
+}
+
+void Window::updateWindow() {
+    board.boardImage = board.originalBoardImage;
+    for (uint8_t col_iter = static_cast<uint8_t>(Column::A); col_iter <= static_cast<uint8_t>(Column::H); col_iter++) {
+        for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
+            if (board.cells[col_iter][row_iter] != nullptr) {
+                std::unique_ptr<Piece>& piece = board.cells[col_iter][row_iter];
+                ImageDraw(&board.boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+            }
+        }
+    }
+
+    texture = LoadTextureFromImage(board.boardImage);
 }
