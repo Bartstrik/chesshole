@@ -1,27 +1,15 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {
-        {
+      {
         "name": "Launch Debug (MSVC)",
         "type": "cppvsdbg",
         "request": "launch",
         "program": "${workspaceFolder}/build/Debug/main.exe",
         "args": [],
-        "stopAtEntry": true,
-        "cwd": "${workspaceFolder}",
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}/build/Debug",
         "console": "integratedTerminal",
-        },
-        {
-        "name": "Launch Release (MSVC)",
-        "type": "cppvsdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/build/Debug/main.exe",
-        "args": [],
-        "stopAtEntry": true,
-        "cwd": "${workspaceFolder}",
-        "console": "integratedTerminal",
-        }
-    }
+      }
   ]
 }

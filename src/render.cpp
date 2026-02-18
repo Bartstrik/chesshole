@@ -56,7 +56,7 @@ Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cas
 
 
 
-Window::Window(const int& screenWidth, const int& screenHeight) : board("../../img/board.png") {
+Window::Window(const int& screenWidth, const int& screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
 }
@@ -69,7 +69,7 @@ Window::~Window() {
 
 void Window::init() {
     InitWindow(screenWidth, screenHeight, "Chesshole");
-    SetTargetFPS(60);
+    SetTargetFPS(60); 
 }
 
 void Window::drawWindow() {
@@ -81,28 +81,20 @@ void Window::drawWindow() {
     EndDrawing();
 }
 
-//should really happen in the chess.hpp file
-void Window::addPieces() {
-    //should make this pick a random image from the pieces folder instead of hardcoding it
-    Pawn pawn1(Column::A, Row::_2, PlayerColor::white, "../../img/pawn1.png");
-    Pawn pawn2(Column::B, Row::_2, PlayerColor::white, "../../img/pawn1.png");
-
-    board.cells[static_cast<uint8_t>(pawn1.getCol())][static_cast<uint8_t>(pawn1.getRow())] = std::make_unique<Piece>(pawn1);
-    board.cells[static_cast<uint8_t>(pawn2.getCol())][static_cast<uint8_t>(pawn2.getRow())] = std::make_unique<Piece>(pawn2);
-
-
-}
-
 void Window::updateWindow() {
-    board.boardImage = board.originalBoardImage;
+    board->boardImage = board->originalBoardImage;
     for (uint8_t col_iter = static_cast<uint8_t>(Column::A); col_iter <= static_cast<uint8_t>(Column::H); col_iter++) {
         for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
-            if (board.cells[col_iter][row_iter] != nullptr) {
-                std::unique_ptr<Piece>& piece = board.cells[col_iter][row_iter];
-                ImageDraw(&board.boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+            if (board->cells[col_iter][row_iter] != nullptr) {
+                std::unique_ptr<Piece>& piece = board->cells[col_iter][row_iter];
+                ImageDraw(&board->boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
             }
         }
     }
 
-    texture = LoadTextureFromImage(board.boardImage);
+    texture = LoadTextureFromImage(board->boardImage);
+}
+
+void Window::setBoard(std::shared_ptr<Board> board) {
+    this->board = board;
 }

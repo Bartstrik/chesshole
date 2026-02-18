@@ -1,13 +1,13 @@
 #pragma once
 
-#define BOARD_WIDTH 420
-#define BOARD_HEIGHT 420
+#define BOARD_WIDTH 410
+#define BOARD_HEIGHT 410
 
 #define CELL_WIDTH 50
 #define CELL_HEIGHT 50
 
-#define PIECE_WIDTH 40
-#define PIECE_HEIGHT 40
+#define PIECE_WIDTH 46
+#define PIECE_HEIGHT 46
 
 #define CELL_PADDING_X ((CELL_WIDTH - PIECE_WIDTH) / 2)
 #define CELL_PADDING_Y ((CELL_HEIGHT - PIECE_HEIGHT) / 2)

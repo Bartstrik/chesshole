@@ -95,4 +95,5 @@ class Board {
 
     const std::string getHistory();
     const PlayerColor getTurn();
+    void setPieces();
 };

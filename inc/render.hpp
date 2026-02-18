@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include <string>
 #include "chess.hpp"
+#include <memory>
 
 Rectangle RectangleFromCell(std::string& cell);
 
@@ -12,14 +13,14 @@ class Window {
     Texture2D texture;
 
     public:
-    Board board;
+    std::shared_ptr<Board> board;
 
     Window(const int& screenWidth, const int& screenHeight);
     ~Window();
 
     void init();
     void drawWindow(); 
-    void addPieces();
     void updateWindow(); //is called after board changes
+    void setBoard(std::shared_ptr<Board> board);
 };
 
