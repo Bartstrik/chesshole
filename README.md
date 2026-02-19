@@ -6,3 +6,4 @@ my chess engine using raylib
 2. Implement piece movements
 3. Implement game string lexer
 4. Implement rules
+5. consider which enums should be strongly defined or weakly

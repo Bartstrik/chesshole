@@ -47,17 +47,43 @@ Board::~Board() {}
 const std::string Board::getHistory() {return history;}
 const PlayerColor Board::getTurn() {return turn;}
 
+//should make this pick a random image from the pieces folder instead of hardcoding it
 void Board::setPieces() {
-    //should make this pick a random image from the pieces folder instead of hardcoding it
-    std::unique_ptr<Piece> p1 = std::make_unique<Pawn>(Column::A, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    std::unique_ptr<Piece> p2 = std::make_unique<Pawn>(Column::B, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    //pawn for now
-    std::unique_ptr<Piece> rook1 = std::make_unique<Pawn>(Column::A, Row::_1, PlayerColor::white, "../../img/white/rook.png");
-    std::unique_ptr<Piece> rook2 = std::make_unique<Pawn>(Column::A, Row::_8, PlayerColor::black, "../../img/black/rook.png");
+    //white piece
+    cells[static_cast<std::size_t>(Column::A)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::A, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::B)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::B, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::C)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::C, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::D)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::D, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::E)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::E, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::F, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::G, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_2)] = std::make_unique<Pawn>(Column::H, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    //pawns for now
+    cells[static_cast<std::size_t>(Column::A)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::A, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
+    cells[static_cast<std::size_t>(Column::B)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::B, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+    cells[static_cast<std::size_t>(Column::C)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::C, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+    cells[static_cast<std::size_t>(Column::D)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::D, Row::_1, PlayerColor::white, "../../img/white/queen1.png");
+    cells[static_cast<std::size_t>(Column::E)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::E, Row::_1, PlayerColor::white, "../../img/white/king1.png");
+    cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::F, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+    cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::G, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+    cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_1)] = std::make_unique<Pawn>(Column::H, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
 
-    cells[static_cast<uint8_t>(p1->getCol())][static_cast<uint8_t>(p1->getRow())] = std::move(p1);
-    cells[static_cast<uint8_t>(p2->getCol())][static_cast<uint8_t>(p2->getRow())] = std::move(p2);
-    cells[static_cast<uint8_t>(rook1->getCol())][static_cast<uint8_t>(rook1->getRow())] = std::move(rook1);
-    cells[static_cast<uint8_t>(rook2->getCol())][static_cast<uint8_t>(rook2->getRow())] = std::move(rook2);
-
+    //black pieces
+    cells[static_cast<std::size_t>(Column::A)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::A, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::B)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::B, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::C)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::C, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::D)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::D, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::E)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::E, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::F, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::G, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_7)] = std::make_unique<Pawn>(Column::H, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    //pawns for now
+    cells[static_cast<std::size_t>(Column::A)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::A, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+    cells[static_cast<std::size_t>(Column::B)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::B, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+    cells[static_cast<std::size_t>(Column::C)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::C, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+    cells[static_cast<std::size_t>(Column::D)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::D, Row::_8, PlayerColor::black, "../../img/black/queen1.png");
+    cells[static_cast<std::size_t>(Column::E)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::E, Row::_8, PlayerColor::black, "../../img/black/king1.png");
+    cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+    cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+    cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Pawn>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
 }
