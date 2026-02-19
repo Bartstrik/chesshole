@@ -36,12 +36,9 @@ Rectangle RectangleFromCell(std::string cell) {
     return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
-Rectangle RectangleFromCell(const Column& col, const Row& row) {
-    auto temp = static_cast<uint8_t>(col);
-    assert(temp >= 0 && temp < 8);
-
-    temp = static_cast<uint8_t>(row);
-    assert(temp >= 0 && temp < 8);
+Rectangle RectangleFromCell(const Column col, const Row row) {
+    assert(col >= Column::A && col <= Column::H);
+    assert(row >= Row::_1 && row <= Row::_8);
 
     //creating the rectangle type
     float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
@@ -56,7 +53,7 @@ Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cas
 
 
 
-Window::Window(const int& screenWidth, const int& screenHeight) {
+Window::Window(const int screenWidth, const int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
 }

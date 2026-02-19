@@ -7,6 +7,9 @@
 
 Rectangle RectangleFromCell(std::string& cell);
 
+Rectangle RectangleFromCell(const Column col, const Row row);
+
+
 class Window {
     private:
     int screenWidth, screenHeight;
@@ -15,7 +18,7 @@ class Window {
     public:
     std::shared_ptr<Board> board;
 
-    Window(const int& screenWidth, const int& screenHeight);
+    Window(const int screenWidth, const int screenHeight);
     ~Window();
 
     void init();

@@ -148,4 +148,5 @@ class Board {
     const std::string getHistory();
     const PlayerColor getTurn();
     void setPieces();
+    int movePiece(const Column fromCol, const Row fromRow, const Column toCol, const Row toRow);
 };

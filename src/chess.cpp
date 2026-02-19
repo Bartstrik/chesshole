@@ -111,3 +111,27 @@ void Board::setPieces() {
     cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Knight>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
     cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Rook>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
 }
+
+int Board::movePiece(const Column fromCol, const Row fromRow, const Column toCol, const Row toRow) {
+    assert(fromCol >= Column::A && fromCol <= Column::H);
+    assert(fromRow >= Row::_1 && fromRow <= Row::_8);
+    assert(toCol >= Column::A && toCol <= Column::H);
+    assert(toRow >= Row::_1 && toRow <= Row::_8);
+
+    std::unique_ptr<Piece>& fromPiece = cells[static_cast<std::size_t>(fromCol)][static_cast<std::size_t>(fromRow)];
+    std::unique_ptr<Piece>& toPiece = cells[static_cast<std::size_t>(toCol)][static_cast<std::size_t>(toRow)];
+
+    //making sure there is a piece at the from position.
+    assert(fromPiece != nullptr);
+
+    //checking whether the color of the from piece is different from the to piece, if it exists. 
+    if(toPiece != nullptr) {
+        assert(fromPiece->getPlayer() != toPiece->getPlayer());
+    }
+
+    //check if the move is a valid move for the piece.
+    //check if the move is allowed according to the position, e.g. don't move through pieces, dont check yourself etc.
+
+    toPiece = std::move(fromPiece);
+    return 0;
+}
