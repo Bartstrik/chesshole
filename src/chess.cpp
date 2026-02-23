@@ -2,6 +2,7 @@
 #include "assert.h"
 #include "common.hpp"
 #include <memory>
+#include <utility>
 
 //Piece Class
 Piece::Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath) {
@@ -110,6 +111,8 @@ void Board::setPieces() {
     cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Bishop>(Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
     cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Knight>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
     cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Rook>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+
+    movePiece(Column::A, Row::_1, Column::B, Row::_7);
 }
 
 int Board::movePiece(const Column fromCol, const Row fromRow, const Column toCol, const Row toRow) {
@@ -133,5 +136,7 @@ int Board::movePiece(const Column fromCol, const Row fromRow, const Column toCol
     //check if the move is allowed according to the position, e.g. don't move through pieces, dont check yourself etc.
 
     toPiece = std::move(fromPiece);
+    toPiece->setCol(toCol);
+    toPiece->setRow(toRow);
     return 0;
 }
