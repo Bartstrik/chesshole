@@ -4,13 +4,14 @@
 #include <memory>
 #include <string>
 #include "raylib.h"
+#include "lexer.hpp"
 
-enum class PlayerColor {
+enum class PlayerColor : uint8_t {
     white,
     black
 };
 
-enum class PieceName {
+enum class PieceName : uint8_t {
     pawn,
     bishop,
     knight,
@@ -20,7 +21,7 @@ enum class PieceName {
 };
 
 //maybe go back to weakly defined enums, so i don't have to typecast it
-enum class Column {
+enum class Column : uint8_t {
     A,
     B,
     C,
@@ -31,7 +32,7 @@ enum class Column {
     H,
 };
 
-enum class Row {
+enum class Row : uint8_t {
     _1,
     _2,
     _3,
@@ -40,6 +41,16 @@ enum class Row {
     _6,
     _7,
     _8
+};
+
+struct Square {
+    Column col;
+    Row row;
+};
+
+struct Move {
+    const Square from;
+    const Square to;
 };
 
 class Piece {
@@ -148,5 +159,8 @@ class Board {
     const std::string getHistory();
     const PlayerColor getTurn();
     void setPieces();
-    int movePiece(const Column fromCol, const Row fromRow, const Column toCol, const Row toRow);
+    int movePiece(const Move move);
+
+    //Using the MoveDesc type, current board position and the game rules, we try to determine the actual move itself.
+    const Move findMove(const MoveDesc moveDesc);
 };

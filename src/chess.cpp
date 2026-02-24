@@ -111,18 +111,16 @@ void Board::setPieces() {
     cells[static_cast<std::size_t>(Column::F)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Bishop>(Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
     cells[static_cast<std::size_t>(Column::G)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Knight>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
     cells[static_cast<std::size_t>(Column::H)][static_cast<std::size_t>(Row::_8)] = std::make_unique<Rook>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
-
-    movePiece(Column::A, Row::_1, Column::B, Row::_7);
 }
 
-int Board::movePiece(const Column fromCol, const Row fromRow, const Column toCol, const Row toRow) {
-    assert(fromCol >= Column::A && fromCol <= Column::H);
-    assert(fromRow >= Row::_1 && fromRow <= Row::_8);
-    assert(toCol >= Column::A && toCol <= Column::H);
-    assert(toRow >= Row::_1 && toRow <= Row::_8);
+int Board::movePiece(const Move move) {
+    assert(move.from.col >= Column::A && move.from.col <= Column::H);
+    assert(move.from.row >= Row::_1 && move.from.row <= Row::_8);
+    assert(move.to.col >= Column::A && move.to.col <= Column::H);
+    assert(move.to.row >= Row::_1 && move.to.row <= Row::_8);
 
-    std::unique_ptr<Piece>& fromPiece = cells[static_cast<std::size_t>(fromCol)][static_cast<std::size_t>(fromRow)];
-    std::unique_ptr<Piece>& toPiece = cells[static_cast<std::size_t>(toCol)][static_cast<std::size_t>(toRow)];
+    std::unique_ptr<Piece>& fromPiece = cells[static_cast<std::size_t>(move.from.col)][static_cast<std::size_t>(move.from.row)];
+    std::unique_ptr<Piece>& toPiece = cells[static_cast<std::size_t>(move.to.col)][static_cast<std::size_t>(move.to.row)];
 
     //making sure there is a piece at the from position.
     assert(fromPiece != nullptr);
@@ -136,7 +134,11 @@ int Board::movePiece(const Column fromCol, const Row fromRow, const Column toCol
     //check if the move is allowed according to the position, e.g. don't move through pieces, dont check yourself etc.
 
     toPiece = std::move(fromPiece);
-    toPiece->setCol(toCol);
-    toPiece->setRow(toRow);
+    toPiece->setCol(move.to.col);
+    toPiece->setRow(move.to.row);
     return 0;
+}
+
+const Move Board::findMove(const MoveDesc moveDesc) {
+
 }

@@ -17,6 +17,7 @@ target_sources(main PRIVATE
     src/main.cpp
     src/chess.cpp
     src/render.cpp
+    src/lexer.cpp
 )
 
 #header files
