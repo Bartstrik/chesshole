@@ -14,3 +14,83 @@
 
 #define BOARD_PADDING_X ((BOARD_WIDTH - 8 * CELL_WIDTH) / 2)
 #define BOARD_PADDING_Y ((BOARD_HEIGHT - 8 * CELL_HEIGHT) / 2)
+
+
+
+enum class End : uint8_t {
+    whiteWins,
+    blackWins,
+    draw
+};
+
+enum class CastleSide : uint8_t {
+    kingSide,
+    queenSide,
+};
+
+enum class PlayerColor : uint8_t {
+    white,
+    black
+};
+
+enum class PieceName : uint8_t {
+    pawn,
+    bishop,
+    knight,
+    rook,
+    queen,
+    king
+};
+
+//maybe go back to weakly defined enums, so i don't have to typecast it
+enum class Column : uint8_t {
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+};
+
+enum class Row : uint8_t {
+    _1,
+    _2,
+    _3,
+    _4,
+    _5,
+    _6,
+    _7,
+    _8
+};
+
+struct Square {
+    Column col;
+    Row row;
+};
+
+struct Move {
+    Square from;
+    Square to;
+};
+
+struct MoveDesc {
+    Square from;
+    Square to;
+
+    PieceName piece;
+    PieceName promotionPiece;
+    
+    End end;
+    CastleSide castleSide;
+
+    bool capture = false;
+    bool enPassant = false;
+    bool promotion = false;
+    bool castle = false;
+    bool check = false;
+    bool checkmate = false;
+    bool drawOffer = false;
+    bool endOfGame = false;
+};

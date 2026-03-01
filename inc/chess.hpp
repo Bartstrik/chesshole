@@ -5,53 +5,7 @@
 #include <string>
 #include "raylib.h"
 #include "lexer.hpp"
-
-enum class PlayerColor : uint8_t {
-    white,
-    black
-};
-
-enum class PieceName : uint8_t {
-    pawn,
-    bishop,
-    knight,
-    rook,
-    queen,
-    king
-};
-
-//maybe go back to weakly defined enums, so i don't have to typecast it
-enum class Column : uint8_t {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-};
-
-enum class Row : uint8_t {
-    _1,
-    _2,
-    _3,
-    _4,
-    _5,
-    _6,
-    _7,
-    _8
-};
-
-struct Square {
-    Column col;
-    Row row;
-};
-
-struct Move {
-    const Square from;
-    const Square to;
-};
+#include "common.hpp"
 
 class Piece {
     protected:
