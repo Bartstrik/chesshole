@@ -6,10 +6,10 @@
 #include <print>
 
 //Piece Class
-Piece::Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath) {
-    assert(!pieceImagePath.empty());
-    pieceImage = LoadImage(pieceImagePath.c_str());
-    ImageResize(&pieceImage, PIECE_WIDTH, PIECE_HEIGHT);
+Piece::Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) {
+    assert(!imagePath.empty());
+    image = LoadImage(imagePath.c_str());
+    ImageResize(&image, PIECE_WIDTH, PIECE_HEIGHT);
 
     this->name = name;
     this->row = row;
@@ -29,6 +29,13 @@ const Column Piece::getCol() {return col;}
 void Piece::setCol(const Column& col) {this->col = col;}
 
 const PlayerColor Piece::getPlayer() {return player;}
+
+const Image& Piece::getImage() {return image;}
+void Piece::setImage(const std::string& imagePath) {
+    assert(!imagePath.empty());
+    image = LoadImage(imagePath.c_str());
+    ImageResize(&image, PIECE_WIDTH, PIECE_HEIGHT);
+}
 
 
 //Pawn Class

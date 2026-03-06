@@ -84,7 +84,7 @@ void Window::updateWindow() {
         for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
             if (board->cells[col_iter][row_iter] != nullptr) {
                 std::unique_ptr<Piece>& piece = board->cells[col_iter][row_iter];
-                ImageDraw(&board->boardImage, piece->pieceImage, baseRectangleFromImage(piece->pieceImage), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+                ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
             }
         }
     }

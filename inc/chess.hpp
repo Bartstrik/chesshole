@@ -13,12 +13,11 @@ class Piece {
     Row row;
     Column col;
     PlayerColor player;
-    
-    public:
-    Image pieceImage;
+    Image image;
 
+    public:
     Piece() = delete;
-    Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& pieceImagePath);
+    Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     virtual ~Piece();
 
     const PieceName getName();
@@ -31,6 +30,10 @@ class Piece {
     void setCol(const Column& col);
     
     const PlayerColor getPlayer();
+
+    const Image& getImage();
+    void setImage(const std::string& imagePath);
+
 };
 
 class Pawn : public Piece {
