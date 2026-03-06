@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 #define BOARD_WIDTH 410
 #define BOARD_HEIGHT 410
@@ -18,22 +19,28 @@
 
 
 enum class End : uint8_t {
+    none,
     whiteWins,
     blackWins,
     draw
 };
 
 enum class CastleSide : uint8_t {
+    none,
     kingSide,
     queenSide,
 };
 
 enum class PlayerColor : uint8_t {
+    none,
     white,
     black
 };
 
+const char * playerColorCStr(const PlayerColor playerColor);
+
 enum class PieceName : uint8_t {
+    none,
     pawn,
     bishop,
     knight,
@@ -52,6 +59,7 @@ enum class Column : uint8_t {
     F,
     G,
     H,
+    none,
 };
 
 enum class Row : uint8_t {
@@ -62,20 +70,16 @@ enum class Row : uint8_t {
     _5,
     _6,
     _7,
-    _8
+    _8,
+    none,
 };
 
 struct Square {
-    Column col;
-    Row row;
+    Column col = Column::none;
+    Row row = Row::none;
 };
 
 struct Move {
-    Square from;
-    Square to;
-};
-
-struct MoveDesc {
     Square from;
     Square to;
 

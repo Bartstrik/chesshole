@@ -101,6 +101,20 @@ class Board {
     PlayerColor turn = PlayerColor::white;
     bool whiteCanCastle = true;
     bool blackCanCastle = true;
+    bool check = false;
+
+    void endGame(End end);
+    void transformPiece(Square square, PieceName pieceName);
+    void castle(CastleSide castleSide);
+    void drawOffer();
+    void removePiece(const Square square);
+
+    // some function which i pass in the whole move struct and it creates a vector of references to the pieces which are able to make the move specified. 
+    // vector should finalize with size 1.
+    // it updates move.from 
+    int32_t findMove(Move& move);
+
+
 
     public:
     std::array<std::array<std::unique_ptr<Piece>, 8>, 8> cells{};
@@ -113,8 +127,8 @@ class Board {
     const std::string getHistory();
     const PlayerColor getTurn();
     void setPieces();
-    int movePiece(const Move move);
+    void movePiece(const Square from, const Square to);
 
     //Using the MoveDesc type, current board position and the game rules, we try to determine the actual move itself.
-    const Move findMove(const MoveDesc moveDesc);
+    void doMove(Move& moveDesc);
 };

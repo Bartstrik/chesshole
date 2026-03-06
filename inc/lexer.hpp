@@ -11,7 +11,7 @@
 */
 
 void parseAN(const std::string& str, std::vector<std::string>& dest);
-const MoveDesc parseMove(const std::string str);
-void parseMoveWithPieceKnown(MoveDesc& move, std::string::const_iterator begin, std::string::const_iterator end);
-std::vector<MoveDesc> parseMoveSet(std::vector<std::string>& moveSet);
+const Move parseMove(const std::string str);
+void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std::string::const_iterator end);
+std::vector<Move> parseMoveSet(std::vector<std::string>& moveSet);
 

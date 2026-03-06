@@ -1,6 +1,6 @@
 #include "lexer.hpp"
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <type_traits>
 #include <cctype>
 
@@ -40,10 +40,10 @@ Nxd7 Nxd7 22. b4 Be7 23. Rad1 Nf6 24. Na4 O-O 25. Nc5 Bxc5+ 26. bxc5 Rbc8 27.
 Rd6 Rxc5 28. Rxa6 Rxc2 29. a4 Ra2 30. a5 h6 31. Rc1 Rb8 32. Ra7 Nd5 33. a6 Rb6
 34. Ra8+ Kh7 35. a7 Rba6 0-1
 */
-const MoveDesc parseMove(const std::string str) {
+const Move parseMove(const std::string str) {
     assert(!(str.empty()));
 
-    MoveDesc move{};
+    Move move{};
 
     //No need to actually iterate, that will be done in parseMoveWithPieceKnown()
     std::string::const_iterator it = str.begin();
@@ -116,7 +116,7 @@ const MoveDesc parseMove(const std::string str) {
 }
 
 //Note: For pawns, the entire string is expected to be passed in, for other pieces, the first char is omitted
-void parseMoveWithPieceKnown(MoveDesc& move, std::string::const_iterator begin, std::string::const_iterator end) {
+void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std::string::const_iterator end) {
     bool toRowSet = false;
     bool toColSet = false;
 
@@ -169,9 +169,9 @@ void parseMoveWithPieceKnown(MoveDesc& move, std::string::const_iterator begin, 
     return;
 }
 
-std::vector<MoveDesc> parseMoveSet(std::vector<std::string>& moveSet) {
+std::vector<Move> parseMoveSet(std::vector<std::string>& moveSet) {
     assert(!(moveSet.empty()));
-    std::vector<MoveDesc> moves;
+    std::vector<Move> moves;
     moves.reserve(moveSet.size());
     for (auto& moveStr : moveSet) {
         assert(!(moveStr.empty()));
