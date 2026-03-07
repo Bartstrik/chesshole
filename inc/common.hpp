@@ -62,6 +62,12 @@ enum class Column : uint8_t {
     none,
 };
 
+constexpr Column operator+(const Column col, const Column num);
+constexpr Column operator-(const Column col, const Column num);
+
+constexpr Column operator+(const Column col, const uint8_t num);
+constexpr Column operator-(const Column col, const uint8_t num);
+
 enum class Row : uint8_t {
     _1,
     _2,
@@ -73,6 +79,13 @@ enum class Row : uint8_t {
     _8,
     none,
 };
+
+constexpr Row operator+(const Row row, const Row num);
+constexpr Row operator-(const Row row, const Row num);
+
+constexpr Row operator+(const Row row, const uint8_t num);
+constexpr Row operator-(const Row row, const uint8_t num);
+
 
 struct Square {
     Column col = Column::none;
