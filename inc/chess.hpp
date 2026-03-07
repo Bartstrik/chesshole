@@ -34,17 +34,24 @@ class Piece {
     const Image& getImage();
     void setImage(const std::string& imagePath);
 
+    // getMoves expects an empty vector ref as argument, and it will add the squares the piece can move to. 
+    // the vector is an argument and not a return value to prevent unnecessary copying or allocating it on the heap. 
+    // this function is overriden by the child classes
+    virtual void getMoves(std::vector<Square>& to); 
+
 };
 
 class Pawn : public Piece {
     private:
-    bool hasMoved = false;
     //implement moves
 
     public:
     Pawn() = delete;
     Pawn(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Pawn();
+
+    void getMoves(std::vector<Square>& to) override; 
+    void getCaptureMoves(std::vector<Square>& to); 
 };
 
 class Rook : public Piece {

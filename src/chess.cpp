@@ -43,6 +43,32 @@ Pawn::Pawn(const Column& col, const Row& row, const PlayerColor& player, const s
 
 Pawn::~Pawn() {}
 
+void Pawn::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+
+    if (getPlayer() == PlayerColor::white) {
+        if (getRow() == Row::_2) to.emplace_back(Square{getCol(), Row::_4});            // double first move
+        to.emplace_back(Square{getCol(), getRow() + 1});                                // simple move
+    } else if (getPlayer() == PlayerColor::black) {
+        if (getRow() == Row::_7) to.emplace_back(Square{getCol(), Row::_5});
+        to.emplace_back(Square{getCol(), getRow() - 1});
+    }
+    return;
+}
+
+void Pawn::getCaptureMoves(std::vector<Square>& to) {
+    assert(to.empty());
+
+    if (getPlayer() == PlayerColor::white) {
+        if (getCol() != Column::A) to.emplace_back(Square{getCol() - 1, getRow() + 1});
+        if (getCol() != Column::H) to.emplace_back(Square{getCol() + 1, getRow() + 1}); 
+    } else if (getPlayer() == PlayerColor::black) {
+        if (getCol() != Column::A) to.emplace_back(Square{getCol() - 1, getRow() - 1});
+        if (getCol() != Column::H) to.emplace_back(Square{getCol() + 1, getRow() - 1});
+    }
+    return;
+}
+
 //Rook Class
 Rook::Rook(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::rook, col, row, player, imagePath) {}
 
