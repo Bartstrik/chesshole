@@ -77,13 +77,14 @@ Rook::~Rook() {}
 void Rook::getMoves(std::vector<Square>& to) {
     assert(to.empty());
 
-    for (Column col = Column::A; col <= Column::H; col++) {
+    for (Column col = Column::A; col <= Column::H; ++col) {
         to.emplace_back(Square{col, getRow()});
     }
 
-    for (Row row = Row::_1; row <= Row::_8; row++) {
+    for (Row row = Row::_1; row <= Row::_8; ++row) {
         to.emplace_back(Square{getCol(), row});
     }
+    return;
 }
 
 //Knight Class
@@ -91,20 +92,114 @@ Knight::Knight(const Column& col, const Row& row, const PlayerColor& player, con
 
 Knight::~Knight() {}
 
+void Knight::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+    Column col = getCol();
+    Row row = getRow();
+
+    for (const int8_t& colDiff : {-2, 2}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                    to.emplace_back(col + colDiff, row + rowDiff);
+            }
+        }
+    }
+
+    for (const int8_t& rowDiff : {-2, 2}) {
+        for (const int8_t& colDiff : {-1, 1}) {
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                    to.emplace_back(col + colDiff, row + rowDiff);
+            }
+        }
+    }
+    return;
+}
+
 //Bishop Class
 Bishop::Bishop(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::bishop, col, row, player, imagePath) {}
 
 Bishop::~Bishop() {}
+
+void Bishop::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+    
+    //not the most beautifull implementation, but it works
+    for (const int8_t& colDiff : {-1, 1}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            Column col = getCol();
+            Row row = getRow();
+            
+            while (1) {
+                col+=colDiff;
+                row+=rowDiff;
+                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
+                    to.emplace_back(col, row);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    return;
+}
 
 //Queen Class
 Queen::Queen(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::queen, col, row, player, imagePath) {}
 
 Queen::~Queen() {}
 
+void Queen::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+
+    //same as rook
+    for (Column col = Column::A; col <= Column::H; ++col) {
+        to.emplace_back(Square{col, getRow()});
+    }
+
+    for (Row row = Row::_1; row <= Row::_8; ++row) {
+        to.emplace_back(Square{getCol(), row});
+    }
+
+    //same as bishop 
+    for (const int8_t& colDiff : {-1, 1}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            Column col = getCol();
+            Row row = getRow();
+            
+            while (1) {
+                col+=colDiff;
+                row+=rowDiff;
+                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
+                    to.emplace_back(col, row);
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    return;
+}
+
 //King Class
 King::King(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::king, col, row, player, imagePath) {}
 
 King::~King() {}
+
+void King::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+
+    Column col = getCol();
+    Row row = getRow();
+
+    for (int8_t colDiff = -1; colDiff <= 1; colDiff++) {
+        for (int8_t rowDiff = -1; rowDiff <= 1; rowDiff++) {
+            if (colDiff == 0 && rowDiff == 0) continue;
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                to.emplace_back(col + colDiff, row + rowDiff);
+            }
+        }
+    }
+}
 
 //Board Class
 //private:

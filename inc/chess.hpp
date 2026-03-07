@@ -67,42 +67,44 @@ class Rook : public Piece {
 
 class Knight : public Piece {
     private:
-    //implement moves
 
     public:
     Knight() = delete;
     Knight(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Knight();
+
+    void getMoves(std::vector<Square>& to) override;
 };
 
 class Bishop : public Piece {
     private:
-    //implement moves
 
     public:
     Bishop() = delete;
     Bishop(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Bishop();
+    void getMoves(std::vector<Square>& to) override;
 };
 
 class Queen : public Piece {
     private:
-    //implement moves
 
     public:
     Queen() = delete;
     Queen(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Queen();
+    void getMoves(std::vector<Square>& to) override;
 };
 
 class King : public Piece {
     private:
-    //implement moves
-
+    bool hasMoved = false;
+    
     public:
     King() = delete;
     King(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~King();
+    void getMoves(std::vector<Square>& to) override;
 };
 
 //maybe make functions to adjust cells/boardimage instead of having it public

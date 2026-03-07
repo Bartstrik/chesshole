@@ -39,7 +39,7 @@ enum class PlayerColor : uint8_t {
 
 const char * playerColorCStr(const PlayerColor playerColor);
 
-enum class PieceName : uint8_t {
+enum class PieceName : int8_t {
     none,
     pawn,
     bishop,
@@ -50,7 +50,7 @@ enum class PieceName : uint8_t {
 };
 
 //maybe go back to weakly defined enums, so i don't have to typecast it
-enum class Column : uint8_t {
+enum class Column : int8_t {
     A,
     B,
     C,
@@ -63,12 +63,14 @@ enum class Column : uint8_t {
 };
 
 constexpr Column operator++(const Column col);
+constexpr Column operator+=(const Column col, const Column num);
+constexpr Column operator+=(const Column col, const int8_t num);
 
 constexpr Column operator+(const Column col, const Column num);
 constexpr Column operator-(const Column col, const Column num);
 
-constexpr Column operator+(const Column col, const uint8_t num);
-constexpr Column operator-(const Column col, const uint8_t num);
+constexpr Column operator+(const Column col, const int8_t num);
+constexpr Column operator-(const Column col, const int8_t num);
 
 enum class Row : uint8_t {
     _1,
@@ -83,12 +85,14 @@ enum class Row : uint8_t {
 };
 
 constexpr Row operator++(const Row row);
+constexpr Row operator+=(const Row row, const Row num);
+constexpr Row operator+=(const Row row, const int8_t num);
 
 constexpr Row operator+(const Row row, const Row num);
 constexpr Row operator-(const Row row, const Row num);
 
-constexpr Row operator+(const Row row, const uint8_t num);
-constexpr Row operator-(const Row row, const uint8_t num);
+constexpr Row operator+(const Row row, const int8_t num);
+constexpr Row operator-(const Row row, const int8_t num);
 
 
 struct Square {
