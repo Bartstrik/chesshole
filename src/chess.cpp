@@ -74,6 +74,18 @@ Rook::Rook(const Column& col, const Row& row, const PlayerColor& player, const s
 
 Rook::~Rook() {}
 
+void Rook::getMoves(std::vector<Square>& to) {
+    assert(to.empty());
+
+    for (Column col = Column::A; col <= Column::H; col++) {
+        to.emplace_back(Square{col, getRow()});
+    }
+
+    for (Row row = Row::_1; row <= Row::_8; row++) {
+        to.emplace_back(Square{getCol(), row});
+    }
+}
+
 //Knight Class
 Knight::Knight(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::knight, col, row, player, imagePath) {}
 

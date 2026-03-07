@@ -62,6 +62,8 @@ enum class Column : uint8_t {
     none,
 };
 
+constexpr Column operator++(const Column col);
+
 constexpr Column operator+(const Column col, const Column num);
 constexpr Column operator-(const Column col, const Column num);
 
@@ -79,6 +81,8 @@ enum class Row : uint8_t {
     _8,
     none,
 };
+
+constexpr Row operator++(const Row row);
 
 constexpr Row operator+(const Row row, const Row num);
 constexpr Row operator-(const Row row, const Row num);

@@ -56,12 +56,13 @@ class Pawn : public Piece {
 
 class Rook : public Piece {
     private:
-    //implement moves
+    bool hasMoved = false;
 
     public:
     Rook() = delete;
     Rook(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Rook();
+    void getMoves(std::vector<Square>& to) override; 
 };
 
 class Knight : public Piece {
