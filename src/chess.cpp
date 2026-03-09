@@ -226,19 +226,19 @@ void Board::endGame(End end) {
 void Board::transformPiece(Square square, PieceName pieceName) {
     switch(pieceName) {
         case PieceName::bishop:
-            cells[std::to_underlying(square.col)][std::to_underlying(square.row)] = std::make_unique<Bishop>(std::to_underlying(square.col), std::to_underlying(square.row), turn, std::format("../../img/{}/bishop1.png", playerColorCStr(turn)));
+            cells[square.col][square.row] = std::make_unique<Bishop>(square.col, square.row), turn, std::format("../../img/{}/bishop1.png", playerColorCStr(turn));
             break;
 
         case PieceName::knight:
-            cells[std::to_underlying(square.col)][std::to_underlying(square.row)] = std::make_unique<Knight>(std::to_underlying(square.col), std::to_underlying(square.row), turn, std::format("../../img/{}/knight1.png", playerColorCStr(turn)));
+            cells[square.col][square.row] = std::make_unique<Knight>(square.col, square.row), turn, std::format("../../img/{}/knight1.png", playerColorCStr(turn));
             break;
 
         case PieceName::rook:
-            cells[std::to_underlying(square.col)][std::to_underlying(square.row)] = std::make_unique<Rook>(std::to_underlying(square.col), std::to_underlying(square.row), turn, std::format("../../img/{}/rook.png", playerColorCStr(turn)));        
+            cells[square.col][square.row] = std::make_unique<Rook>(square.col, square.row), turn, std::format("../../img/{}/rook.png", playerColorCStr(turn));        
             break;
 
         case PieceName::queen:
-            cells[std::to_underlying(square.col)][std::to_underlying(square.row)] = std::make_unique<Queen>(std::to_underlying(square.col), std::to_underlying(square.row), turn, std::format("../../img/{}/queen.png", playerColorCStr(turn)));
+            cells[square.col][square.row] = std::make_unique<Queen>(square.col, square.row), turn, std::format("../../img/{}/queen.png", playerColorCStr(turn));
             break;
     }
 }
@@ -255,22 +255,22 @@ void Board::castle(CastleSide castleSide) {
     }
 
     if (castleSide == CastleSide::kingSide) {
-        assert(cells[std::to_underlying(Column::E)][std::to_underlying(row)]->getName() == PieceName::king);
-        assert(cells[std::to_underlying(Column::F)][std::to_underlying(row)] == nullptr);
-        assert(cells[std::to_underlying(Column::G)][std::to_underlying(row)] == nullptr);
-        assert(cells[std::to_underlying(Column::H)][std::to_underlying(row)]->getName() == PieceName::rook);
+        assert(cells[Column::E][row]->getName() == PieceName::king);
+        assert(cells[Column::F][row] == nullptr);
+        assert(cells[Column::G][row] == nullptr);
+        assert(cells[Column::H][row]->getName() == PieceName::rook);
 
-        cells[std::to_underlying(Column::F)][std::to_underlying(row)] = std::move(cells[std::to_underlying(Column::E)][std::to_underlying(row)]);
-        cells[std::to_underlying(Column::G)][std::to_underlying(row)] = std::move(cells[std::to_underlying(Column::H)][std::to_underlying(row)]);
+        cells[Column::F][row] = std::move(cells[Column::E][row]);
+        cells[Column::G][row] = std::move(cells[Column::H][row]);
     } else {
-        assert(cells[std::to_underlying(Column::A)][std::to_underlying(row)]->getName() == PieceName::rook);
-        assert(cells[std::to_underlying(Column::C)][std::to_underlying(row)] == nullptr);
-        assert(cells[std::to_underlying(Column::C)][std::to_underlying(row)] == nullptr);
-        assert(cells[std::to_underlying(Column::D)][std::to_underlying(row)] == nullptr);
-        assert(cells[std::to_underlying(Column::E)][std::to_underlying(row)]->getName() == PieceName::king);
+        assert(cells[Column::A][row]->getName() == PieceName::rook);
+        assert(cells[Column::C][row] == nullptr);
+        assert(cells[Column::C][row] == nullptr);
+        assert(cells[Column::D][row] == nullptr);
+        assert(cells[Column::E][row]->getName() == PieceName::king);
 
-        cells[std::to_underlying(Column::C)][std::to_underlying(row)] = std::move(cells[std::to_underlying(Column::E)][std::to_underlying(row)]);
-        cells[std::to_underlying(Column::D)][std::to_underlying(row)] = std::move(cells[std::to_underlying(Column::A)][std::to_underlying(row)]);
+        cells[Column::C][row] = std::move(cells[Column::E][row]);
+        cells[Column::D][row] = std::move(cells[Column::A][row]);
     }
 }
 
@@ -299,42 +299,42 @@ const PlayerColor Board::getTurn() {return turn;}
 //should make this pick a random image from the pieces folder instead of hardcoding it
 void Board::setPieces() {
     //white piece
-    cells[std::to_underlying(Column::A)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::A, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::B)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::B, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::C)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::C, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::D)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::D, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::E)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::E, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::F)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::F, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::G)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::G, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
-    cells[std::to_underlying(Column::H)][std::to_underlying(Row::_2)] = std::make_unique<Pawn>(Column::H, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::A][Row::_2] = std::make_unique<Pawn>(Column::A, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::B][Row::_2] = std::make_unique<Pawn>(Column::B, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::C][Row::_2] = std::make_unique<Pawn>(Column::C, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::D][Row::_2] = std::make_unique<Pawn>(Column::D, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::E][Row::_2] = std::make_unique<Pawn>(Column::E, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::F][Row::_2] = std::make_unique<Pawn>(Column::F, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::G][Row::_2] = std::make_unique<Pawn>(Column::G, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+    cells[Column::H][Row::_2] = std::make_unique<Pawn>(Column::H, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
 
-    cells[std::to_underlying(Column::A)][std::to_underlying(Row::_1)] = std::make_unique<Rook>(Column::A, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
-    cells[std::to_underlying(Column::B)][std::to_underlying(Row::_1)] = std::make_unique<Knight>(Column::B, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
-    cells[std::to_underlying(Column::C)][std::to_underlying(Row::_1)] = std::make_unique<Bishop>(Column::C, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
-    cells[std::to_underlying(Column::D)][std::to_underlying(Row::_1)] = std::make_unique<Queen>(Column::D, Row::_1, PlayerColor::white, "../../img/white/queen1.png");
-    cells[std::to_underlying(Column::E)][std::to_underlying(Row::_1)] = std::make_unique<King>(Column::E, Row::_1, PlayerColor::white, "../../img/white/king1.png");
-    cells[std::to_underlying(Column::F)][std::to_underlying(Row::_1)] = std::make_unique<Bishop>(Column::F, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
-    cells[std::to_underlying(Column::G)][std::to_underlying(Row::_1)] = std::make_unique<Knight>(Column::G, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
-    cells[std::to_underlying(Column::H)][std::to_underlying(Row::_1)] = std::make_unique<Rook>(Column::H, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
+    cells[Column::A][Row::_1] = std::make_unique<Rook>(Column::A, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
+    cells[Column::B][Row::_1] = std::make_unique<Knight>(Column::B, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+    cells[Column::C][Row::_1] = std::make_unique<Bishop>(Column::C, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+    cells[Column::D][Row::_1] = std::make_unique<Queen>(Column::D, Row::_1, PlayerColor::white, "../../img/white/queen1.png");
+    cells[Column::E][Row::_1] = std::make_unique<King>(Column::E, Row::_1, PlayerColor::white, "../../img/white/king1.png");
+    cells[Column::F][Row::_1] = std::make_unique<Bishop>(Column::F, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+    cells[Column::G][Row::_1] = std::make_unique<Knight>(Column::G, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+    cells[Column::H][Row::_1] = std::make_unique<Rook>(Column::H, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
 
     //black pieces
-    cells[std::to_underlying(Column::A)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::A, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::B)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::B, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::C)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::C, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::D)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::D, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::E)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::E, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::F)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::F, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::G)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::G, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
-    cells[std::to_underlying(Column::H)][std::to_underlying(Row::_7)] = std::make_unique<Pawn>(Column::H, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::A][Row::_7] = std::make_unique<Pawn>(Column::A, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::B][Row::_7] = std::make_unique<Pawn>(Column::B, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::C][Row::_7] = std::make_unique<Pawn>(Column::C, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::D][Row::_7] = std::make_unique<Pawn>(Column::D, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::E][Row::_7] = std::make_unique<Pawn>(Column::E, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::F][Row::_7] = std::make_unique<Pawn>(Column::F, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::G][Row::_7] = std::make_unique<Pawn>(Column::G, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+    cells[Column::H][Row::_7] = std::make_unique<Pawn>(Column::H, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
 
-    cells[std::to_underlying(Column::A)][std::to_underlying(Row::_8)] = std::make_unique<Rook>(Column::A, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
-    cells[std::to_underlying(Column::B)][std::to_underlying(Row::_8)] = std::make_unique<Knight>(Column::B, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
-    cells[std::to_underlying(Column::C)][std::to_underlying(Row::_8)] = std::make_unique<Bishop>(Column::C, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
-    cells[std::to_underlying(Column::D)][std::to_underlying(Row::_8)] = std::make_unique<Queen>(Column::D, Row::_8, PlayerColor::black, "../../img/black/queen1.png");
-    cells[std::to_underlying(Column::E)][std::to_underlying(Row::_8)] = std::make_unique<King>(Column::E, Row::_8, PlayerColor::black, "../../img/black/king1.png");
-    cells[std::to_underlying(Column::F)][std::to_underlying(Row::_8)] = std::make_unique<Bishop>(Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
-    cells[std::to_underlying(Column::G)][std::to_underlying(Row::_8)] = std::make_unique<Knight>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
-    cells[std::to_underlying(Column::H)][std::to_underlying(Row::_8)] = std::make_unique<Rook>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+    cells[Column::A][Row::_8] = std::make_unique<Rook>(Column::A, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+    cells[Column::B][Row::_8] = std::make_unique<Knight>(Column::B, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+    cells[Column::C][Row::_8] = std::make_unique<Bishop>(Column::C, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+    cells[Column::D][Row::_8] = std::make_unique<Queen>(Column::D, Row::_8, PlayerColor::black, "../../img/black/queen1.png");
+    cells[Column::E][Row::_8] = std::make_unique<King>(Column::E, Row::_8, PlayerColor::black, "../../img/black/king1.png");
+    cells[Column::F][Row::_8] = std::make_unique<Bishop>(Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+    cells[Column::G][Row::_8] = std::make_unique<Knight>(Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+    cells[Column::H][Row::_8] = std::make_unique<Rook>(Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
 }
 
 void Board::movePiece(const Square from, const Square to) {
@@ -343,8 +343,8 @@ void Board::movePiece(const Square from, const Square to) {
     assert(to.col >= Column::A && to.col <= Column::H);
     assert(to.row >= Row::_1 && to.row <= Row::_8);
 
-    std::unique_ptr<Piece>& fromPiece = cells[std::to_underlying(from.col)][std::to_underlying(from.row)];
-    std::unique_ptr<Piece>& toPiece = cells[std::to_underlying(to.col)][std::to_underlying(to.row)];
+    std::unique_ptr<Piece>& fromPiece = cells[from.col][from.row];
+    std::unique_ptr<Piece>& toPiece = cells[to.col][to.row];
 
     //making sure there is a piece at the from position.
     assert(fromPiece != nullptr);

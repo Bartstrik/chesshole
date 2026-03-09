@@ -107,7 +107,21 @@ class King : public Piece {
     void getMoves(std::vector<Square>& to) override;
 };
 
-//maybe make functions to adjust cells/boardimage instead of having it public
+template<typename T, std::size_t N>
+struct EnumArray {
+    std::array<T, N> data{};
+
+    template<typename E>
+    constexpr T& operator[](E e) {
+        return data[std::to_underlying(e)];
+    }
+
+    template<typename E>
+    constexpr const T& operator[](E e) const {
+        return data[std::to_underlying(e)];
+    }
+};
+
 class Board {
     private:
     std::string history{};
@@ -130,7 +144,7 @@ class Board {
 
 
     public:
-    std::array<std::array<std::unique_ptr<Piece>, 8>, 8> cells{};
+    EnumArray<EnumArray<std::unique_ptr<Piece>, 8>, 8> cells;
     Image originalBoardImage, boardImage;
 
     Board() = delete;
