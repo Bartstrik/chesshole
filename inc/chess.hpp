@@ -29,16 +29,10 @@ class Piece {
     const Column getCol();
     void setCol(const Column& col);
     
-    const PlayerColor getPlayer();
+    const PlayerColor getPlayerColor();
 
     const Image& getImage();
     void setImage(const std::string& imagePath);
-
-    // getMoves expects an empty vector ref as argument, and it will add the squares the piece can move to. 
-    // the vector is an argument and not a return value to prevent unnecessary copying or allocating it on the heap. 
-    // this function is overriden by the child classes
-    virtual void getMoves(std::vector<Square>& to); 
-
 };
 
 class Pawn : public Piece {
@@ -49,9 +43,6 @@ class Pawn : public Piece {
     Pawn() = delete;
     Pawn(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Pawn();
-
-    void getMoves(std::vector<Square>& to) override; 
-    void getCaptureMoves(std::vector<Square>& to); 
 };
 
 class Rook : public Piece {
@@ -62,7 +53,6 @@ class Rook : public Piece {
     Rook() = delete;
     Rook(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Rook();
-    void getMoves(std::vector<Square>& to) override; 
 };
 
 class Knight : public Piece {
@@ -73,7 +63,6 @@ class Knight : public Piece {
     Knight(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Knight();
 
-    void getMoves(std::vector<Square>& to) override;
 };
 
 class Bishop : public Piece {
@@ -83,7 +72,6 @@ class Bishop : public Piece {
     Bishop() = delete;
     Bishop(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Bishop();
-    void getMoves(std::vector<Square>& to) override;
 };
 
 class Queen : public Piece {
@@ -93,7 +81,6 @@ class Queen : public Piece {
     Queen() = delete;
     Queen(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~Queen();
-    void getMoves(std::vector<Square>& to) override;
 };
 
 class King : public Piece {
@@ -104,7 +91,6 @@ class King : public Piece {
     King() = delete;
     King(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     ~King();
-    void getMoves(std::vector<Square>& to) override;
 };
 
 template<typename T, std::size_t N>
@@ -155,6 +141,17 @@ class Board {
     const PlayerColor getTurn();
     void setPieces();
     void movePiece(const Square from, const Square to);
+
+    // getMoves expects an empty vector ref as argument, and it will add the squares the piece can move to. 
+    // the vector is an argument and not a return value to prevent unnecessary copying or allocating it on the heap. 
+    // this function is overriden by the child classes
+    void getMoves(const Column col, const Row row, std::vector<Square>& to);
+    void getPawnMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getRookMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getKnightMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getBishopMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getQueenMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getKingMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
 
     //Using the MoveDesc type, current board position and the game rules, we try to determine the actual move itself.
     void doMove(Move& moveDesc);

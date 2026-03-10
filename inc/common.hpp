@@ -49,7 +49,6 @@ enum class PieceName : int8_t {
     king
 };
 
-//maybe go back to weakly defined enums, so i don't have to typecast it
 enum class Column : int8_t {
     A,
     B,
@@ -63,6 +62,8 @@ enum class Column : int8_t {
 };
 
 constexpr Column operator++(const Column col);
+constexpr Column operator--(const Column col);
+
 constexpr Column operator+=(const Column col, const Column num);
 constexpr Column operator+=(const Column col, const int8_t num);
 
@@ -85,6 +86,8 @@ enum class Row : uint8_t {
 };
 
 constexpr Row operator++(const Row row);
+constexpr Row operator--(const Row row);
+
 constexpr Row operator+=(const Row row, const Row num);
 constexpr Row operator+=(const Row row, const int8_t num);
 

@@ -28,7 +28,7 @@ void Piece::setRow(const Row& row) {this->row = row;}
 const Column Piece::getCol() {return col;}
 void Piece::setCol(const Column& col) {this->col = col;}
 
-const PlayerColor Piece::getPlayer() {return player;}
+const PlayerColor Piece::getPlayerColor() {return player;}
 
 const Image& Piece::getImage() {return image;}
 void Piece::setImage(const std::string& imagePath) {
@@ -43,163 +43,30 @@ Pawn::Pawn(const Column& col, const Row& row, const PlayerColor& player, const s
 
 Pawn::~Pawn() {}
 
-void Pawn::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-
-    if (getPlayer() == PlayerColor::white) {
-        if (getRow() == Row::_2) to.emplace_back(Square{getCol(), Row::_4});            // double first move
-        to.emplace_back(Square{getCol(), getRow() + 1});                                // simple move
-    } else if (getPlayer() == PlayerColor::black) {
-        if (getRow() == Row::_7) to.emplace_back(Square{getCol(), Row::_5});
-        to.emplace_back(Square{getCol(), getRow() - 1});
-    }
-    return;
-}
-
-void Pawn::getCaptureMoves(std::vector<Square>& to) {
-    assert(to.empty());
-
-    if (getPlayer() == PlayerColor::white) {
-        if (getCol() != Column::A) to.emplace_back(Square{getCol() - 1, getRow() + 1});
-        if (getCol() != Column::H) to.emplace_back(Square{getCol() + 1, getRow() + 1}); 
-    } else if (getPlayer() == PlayerColor::black) {
-        if (getCol() != Column::A) to.emplace_back(Square{getCol() - 1, getRow() - 1});
-        if (getCol() != Column::H) to.emplace_back(Square{getCol() + 1, getRow() - 1});
-    }
-    return;
-}
-
 //Rook Class
 Rook::Rook(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::rook, col, row, player, imagePath) {}
 
 Rook::~Rook() {}
-
-void Rook::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-
-    for (Column col = Column::A; col <= Column::H; ++col) {
-        to.emplace_back(Square{col, getRow()});
-    }
-
-    for (Row row = Row::_1; row <= Row::_8; ++row) {
-        to.emplace_back(Square{getCol(), row});
-    }
-    return;
-}
 
 //Knight Class
 Knight::Knight(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::knight, col, row, player, imagePath) {}
 
 Knight::~Knight() {}
 
-void Knight::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-    Column col = getCol();
-    Row row = getRow();
-
-    for (const int8_t& colDiff : {-2, 2}) {
-        for (const int8_t& rowDiff : {-1, 1}) {
-            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
-                    to.emplace_back(col + colDiff, row + rowDiff);
-            }
-        }
-    }
-
-    for (const int8_t& rowDiff : {-2, 2}) {
-        for (const int8_t& colDiff : {-1, 1}) {
-            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
-                    to.emplace_back(col + colDiff, row + rowDiff);
-            }
-        }
-    }
-    return;
-}
-
 //Bishop Class
 Bishop::Bishop(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::bishop, col, row, player, imagePath) {}
 
 Bishop::~Bishop() {}
-
-void Bishop::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-    
-    //not the most beautifull implementation, but it works
-    for (const int8_t& colDiff : {-1, 1}) {
-        for (const int8_t& rowDiff : {-1, 1}) {
-            Column col = getCol();
-            Row row = getRow();
-            
-            while (1) {
-                col+=colDiff;
-                row+=rowDiff;
-                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
-                    to.emplace_back(col, row);
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-    return;
-}
 
 //Queen Class
 Queen::Queen(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::queen, col, row, player, imagePath) {}
 
 Queen::~Queen() {}
 
-void Queen::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-
-    //same as rook
-    for (Column col = Column::A; col <= Column::H; ++col) {
-        to.emplace_back(Square{col, getRow()});
-    }
-
-    for (Row row = Row::_1; row <= Row::_8; ++row) {
-        to.emplace_back(Square{getCol(), row});
-    }
-
-    //same as bishop 
-    for (const int8_t& colDiff : {-1, 1}) {
-        for (const int8_t& rowDiff : {-1, 1}) {
-            Column col = getCol();
-            Row row = getRow();
-            
-            while (1) {
-                col+=colDiff;
-                row+=rowDiff;
-                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
-                    to.emplace_back(col, row);
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-    return;
-}
-
 //King Class
 King::King(const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath) : Piece(PieceName::king, col, row, player, imagePath) {}
 
 King::~King() {}
-
-void King::getMoves(std::vector<Square>& to) {
-    assert(to.empty());
-
-    Column col = getCol();
-    Row row = getRow();
-
-    for (int8_t colDiff = -1; colDiff <= 1; colDiff++) {
-        for (int8_t rowDiff = -1; rowDiff <= 1; rowDiff++) {
-            if (colDiff == 0 && rowDiff == 0) continue;
-            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
-                to.emplace_back(col + colDiff, row + rowDiff);
-            }
-        }
-    }
-}
 
 //Board Class
 //private:
@@ -351,7 +218,7 @@ void Board::movePiece(const Square from, const Square to) {
 
     //checking whether the color of the from piece is different from the to piece, if it exists. 
     if(toPiece != nullptr) {
-        assert(fromPiece->getPlayer() != toPiece->getPlayer());
+        assert(fromPiece->getPlayerColor() != toPiece->getPlayerColor());
     }
 
     //check if the move is a valid move for the piece.
@@ -361,6 +228,263 @@ void Board::movePiece(const Square from, const Square to) {
     toPiece->setCol(to.col);
     toPiece->setRow(to.row);
     return;
+}
+
+void Board::getMoves(const Column col, const Row row, std::vector<Square>& to){
+    std::unique_ptr<Piece>& piece = cells[col][row];
+    switch(piece->getName()) {
+        case PieceName::pawn:
+            getPawnMoves(piece, to);
+            break;
+        case PieceName::rook:
+            getRookMoves(piece, to);
+            break;
+        case PieceName::knight:
+            getKnightMoves(piece, to);
+            break;
+        case PieceName::bishop:
+            getBishopMoves(piece, to);
+            break;
+        case PieceName::queen:
+            getQueenMoves(piece, to);
+            break;
+        case PieceName::king:
+            getKingMoves(piece, to);
+            break;
+        default:
+            assert(0);
+    }
+}
+
+void Board::getPawnMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    const Column col = piece->getCol();
+    const Row row = piece->getRow();
+    PlayerColor color = piece->getPlayerColor();
+    int8_t colorDiff;
+
+    colorDiff = 1 ? color == PlayerColor::white : colorDiff = -1;
+        
+    // simple move
+    if (cells[col][row + colorDiff] == nullptr) {
+        to.emplace_back(Square{col, row + colorDiff}); 
+        // double first move
+        if ((color == PlayerColor::white && row == Row::_2) || (color == PlayerColor::black && row == Row::_7)) {
+            if (cells[col][row + colorDiff] == nullptr) to.emplace_back(Square{col, row + 2 * colorDiff});   
+        }         
+    }                               
+    //captures
+    if (col != Column::A && cells[col - 1][row + colorDiff]->getPlayerColor() != color) to.emplace_back(Square{col - 1, row + colorDiff});                 
+    if (col != Column::H && cells[col + 1][row + colorDiff]->getPlayerColor() != color) to.emplace_back(Square{col + 1, row + colorDiff}); 
+}
+
+void Board::getRookMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    Column col = piece->getCol();
+    Row row = piece->getRow();
+    const PlayerColor color = piece->getPlayerColor();
+
+    do {
+        ++col;
+        if (col > Column::H) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    col = piece->getCol();;
+    do {
+        --col;
+        if (col < Column::A) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    do {
+        ++row;
+        if (row> Row::_8) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    row = piece->getRow();
+    do {
+        --row;
+        if (row < Row::_1) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+}
+
+void Board::getKnightMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    const Column col = piece->getCol();
+    const Row row = piece->getRow();
+    const PlayerColor color = piece->getPlayerColor();
+
+    for (const int8_t& colDiff : {-2, 2}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                if (cells[col + colDiff][row + rowDiff] == nullptr || cells[col + colDiff][row + rowDiff]->getPlayerColor() != color){
+                    to.emplace_back(col + colDiff, row + rowDiff);
+                }
+            }
+        }
+    }
+
+    for (const int8_t& rowDiff : {-2, 2}) {
+        for (const int8_t& colDiff : {-1, 1}) {
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                if (cells[col + colDiff][row + rowDiff] == nullptr || cells[col + colDiff][row + rowDiff]->getPlayerColor() != color){
+                    to.emplace_back(col + colDiff, row + rowDiff);
+                }
+            }
+        }
+    }
+}
+
+void Board::getBishopMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    
+    const PlayerColor color = piece->getPlayerColor();
+
+    //not the most beautifull implementation, but it works
+    for (const int8_t& colDiff : {-1, 1}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            Column col = piece->getCol();
+            Row row = piece->getRow();
+
+            while (1) {    
+                col+=colDiff;
+                row+=rowDiff;
+                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
+                    if (cells[col][row] == nullptr) {
+                        to.emplace_back(col, row);
+                    } else {
+                        if (cells[col][row]->getPlayerColor() != color) {
+                            to.emplace_back(col, row);
+                        }
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Board::getQueenMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    //same as rook
+    Column col = piece->getCol();
+    Row row = piece->getRow();
+    const PlayerColor color = piece->getPlayerColor();
+
+    do {
+        ++col;
+        if (col > Column::H) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    col = piece->getCol();;
+    do {
+        --col;
+        if (col < Column::A) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    do {
+        ++row;
+        if (row> Row::_8) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    row = piece->getRow();
+    do {
+        --row;
+        if (row < Row::_1) break;
+        if (cells[col][row] == nullptr || cells[col][row]->getPlayerColor() != color) {
+            to.emplace_back(Square{col, row});
+        }
+        
+    } while (cells[col][row] == nullptr);
+
+    //same as bishop 
+    for (const int8_t& colDiff : {-1, 1}) {
+        for (const int8_t& rowDiff : {-1, 1}) {
+            col = piece->getCol();
+            row = piece->getRow();
+
+            while (1) {    
+                col+=colDiff;
+                row+=rowDiff;
+                if (col >= Column::A && col <= Column::H && row >= Row::_1 && row <= Row::_8) {
+                    if (cells[col][row] == nullptr) {
+                        to.emplace_back(col, row);
+                    } else {
+                        if (cells[col][row]->getPlayerColor() != color) {
+                            to.emplace_back(col, row);
+                        }
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Board::getKingMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to) {
+    assert(to.empty());
+    assert(piece != nullptr);
+    assert(piece->getPlayerColor() == PlayerColor::white || piece->getPlayerColor() == PlayerColor::black);
+
+    const Column col = piece->getCol();
+    const Row row = piece->getRow();
+    const PlayerColor color = piece->getPlayerColor();
+
+    for (const int8_t& colDiff : {-1, 0, 1}) {
+        for (const int8_t& rowDiff : {-1, 0, 1}) {
+            if (colDiff == 0 && rowDiff == 0) continue;
+            if (col + colDiff >= Column::A && col + colDiff <= Column::H && row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
+                if (cells[col + colDiff][row + rowDiff] == nullptr || cells[col + colDiff][row + rowDiff]->getPlayerColor() != color)
+                    to.emplace_back(col + colDiff, row + rowDiff);
+            }
+        }
+    }
 }
 
 void Board::doMove(Move& move) {

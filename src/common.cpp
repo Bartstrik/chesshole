@@ -6,6 +6,10 @@ constexpr Column operator++(const Column col) {
     return Column{std::to_underlying(col) + 1};
 }
 
+constexpr Column operator--(const Column col) {
+    return Column{std::to_underlying(col) - 1};
+}
+
 constexpr Column operator+=(const Column col, const Column num) {
     return Column{std::to_underlying(col) + std::to_underlying(num)};
 }
@@ -32,6 +36,10 @@ constexpr Column operator-(const Column col, const int8_t num) {
 
 constexpr Row operator++(const Row row) {
     return Row{std::to_underlying(row) + 1};
+}
+
+constexpr Row operator++(const Row row) {
+    return Row{std::to_underlying(row) -1};
 }
 
 constexpr Row operator+=(const Row row, const Row num) {
