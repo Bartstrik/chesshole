@@ -169,13 +169,13 @@ void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std:
     return;
 }
 
-std::vector<Move> parseMoveSet(std::vector<std::string>& moveSet) {
+void parseMoveSet(std::vector<std::string>& moveSet, std::vector<Move>& dest) {
     assert(!(moveSet.empty()));
-    std::vector<Move> moves;
-    moves.reserve(moveSet.size());
+    assert(dest.empty());
+    
+    dest.reserve(moveset.size());
     for (auto& moveStr : moveSet) {
         assert(!(moveStr.empty()));
-        moves.emplace_back(parseMove(moveStr));
+        dest.emplace_back(parseMove(moveStr));
     }
-    return moves;
 }
