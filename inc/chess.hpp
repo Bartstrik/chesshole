@@ -3,8 +3,10 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
+
 #include "raylib.h"
-#include "lexer.hpp"
 #include "common.hpp"
 
 class Piece {
@@ -122,10 +124,7 @@ class Board {
     void drawOffer();
     void removePiece(const Square square);
 
-    // some function which i pass in the whole move struct and it creates a vector of references to the pieces which are able to make the move specified. 
-    // vector should finalize with size 1.
-    // it updates move.from 
-    int32_t findMove(Move& move);
+    const Square findMove(const Move& move);
 
 
 
@@ -153,6 +152,6 @@ class Board {
     void getQueenMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
     void getKingMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
 
-    //Using the MoveDesc type, current board position and the game rules, we try to determine the actual move itself.
-    void doMove(Move& moveDesc);
+    //Using the Move type, current board position and the game rules, we try to determine the actual move itself.
+    void doMove(const Move& move);
 };

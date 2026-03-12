@@ -1,7 +1,5 @@
 #include "lexer.hpp"
-#include <algorithm>
 #include <cassert>
-#include <type_traits>
 #include <cctype>
 
 
