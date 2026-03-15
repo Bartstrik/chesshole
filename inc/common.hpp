@@ -73,7 +73,7 @@ constexpr Column operator-(const Column col, const Column num);
 constexpr Column operator+(const Column col, const int8_t num);
 constexpr Column operator-(const Column col, const int8_t num);
 
-enum class Row : uint8_t {
+enum class Row : int8_t {
     _1,
     _2,
     _3,
@@ -101,7 +101,12 @@ constexpr Row operator-(const Row row, const int8_t num);
 struct Square {
     Column col = Column::none;
     Row row = Row::none;
+
+    constexpr bool operator==(auto sq) {
+        return (this->col == sq.col && this->row == sq.row);
+    }
 };
+
 
 struct Move {
     Square from;

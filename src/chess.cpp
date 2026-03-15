@@ -4,6 +4,7 @@
 #include <memory>
 #include <print>
 #include <utility>
+#include <vector>
 
 // Piece Class
 Piece::Piece(const PieceName &name, const Column &col, const Row &row,
@@ -258,7 +259,168 @@ void Board::setPieces() {
 
 const Square Board::findMove(const Move &move) {
     //looping through the whole board and finding which piece can move to move.to.
-    //should use the attributes inside the move structs, specifically if the piece is known, or when it is a capture
+    //should use the attributes inside the move structs, specifically when the piece is known, and when the move results in a check
+    //captures are only relevant for enpessant which is already covered in the doMove function.
+    //TODO: find a way to integrate checks
+    //TODO: implement function for each piece similar to the getMoves functions but which has move.to as input argument
+
+  std::vector<Square> ret{};
+  
+  //starting with known piecename case:
+  switch (move.piece) {
+    case PieceName::pawn:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
+            getPawnMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                if (move.check) {
+                  //TODO: implement check case
+
+                }
+                return Square{col, row};
+              }
+            }
+          }
+        }
+      }
+      break;
+ 
+    case PieceName::rook:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
+            getRookMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                return Square{col, row};
+              }
+            }
+          }
+        }
+      }
+      break;
+    
+    case PieceName::knight:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
+            getKnightMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                return Square{col, row}; 
+              }
+            }
+          }
+        }
+      }
+      break;
+      
+     case PieceName::bishop:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
+            getBishopMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                return Square{col, row}; 
+              }
+            }
+          }
+        }
+      } 
+      break;
+
+    case PieceName::queen:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
+            getQueenMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                return Square{col, row}; 
+              }
+            }
+          }
+        }
+      }
+      break;
+
+    case PieceName::king:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+          std::unique_ptr<Piece>& piece = cells[col][row];
+          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
+            getKingMoves(piece, ret);
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                return Square{col, row}; 
+              }
+            }
+          }
+        }
+      }
+      break;
+
+    default:
+      //Unknown piecename case:
+      for (Column col = Column::A; col <= Column::H; ++col) {
+          for (Row row = Row::_1; row <= Row::_8; ++row) {
+            std::unique_ptr<Piece>& piece = cells[col][row];
+            if (piece == nullptr) continue;
+
+            if (piece->getPlayerColor() == turn) {
+              switch (piece->getName()) { 
+                case PieceName::pawn:
+                  getPawnMoves(piece, ret);
+                  break;
+
+                case PieceName::rook:
+                  getRookMoves(piece, ret);
+                  break;
+
+                case PieceName::knight:
+                  getKnightMoves(piece, ret);
+                  break;
+
+                case PieceName::bishop:
+                  getBishopMoves(piece, ret);
+                  break;
+
+                 case PieceName::queen:
+                  getQueenMoves(piece, ret);
+                  break;
+
+                case PieceName::king:
+                  getKingMoves(piece, ret);
+                  break;
+
+                default:
+                  assert(0);
+                  break;
+
+            }
+              
+            for (auto& entry : ret) {
+              if (entry == move.to) {
+                if (move.check) {
+                  // TODO: implement check func
+
+                }
+                return Square{col, row}; 
+              }
+            }
+            ret.clear();
+          }
+        }
+      }
+  }
 
 }
 
@@ -599,13 +761,6 @@ void Board::doMove(const Move &move) {
   if (move.from.col >= Column::A && move.from.col <= Column::H &&
       move.from.row >= Row::_1 && move.from.row <= Row::_8) {
     movePiece(move.from, move.to);
-    return;
-  }
-
-  if (move.capture) {
-    const Square from = findMove(move);
-    
-    movePiece(from, move.to);
     return;
   }
 
