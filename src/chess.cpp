@@ -1,10 +1,11 @@
+#include <memory>
+#include <iostream>
+#include <utility>
+#include <vector>
+
 #include "chess.hpp"
 #include "cassert"
 #include "common.hpp"
-#include <memory>
-#include <print>
-#include <utility>
-#include <vector>
 
 // Piece Class
 Piece::Piece(const PieceName &name, const Column &col, const Row &row,
@@ -86,19 +87,19 @@ King::~King() {}
 void Board::endGame(End end) {
   switch (end) {
   case End::whiteWins:
-    std::println("White wins!");
+    std::cout << "White wins!" << std::endl;
     break;
 
   case End::blackWins:
-    std::println("Black wins!");
+    std::cout << "Black wins!" << std::endl;
     break;
 
   case End::draw:
-    std::println("Draw!");
+    std::cout << "Draw!" << std::endl;
     break;
 
   default:
-    std::println("Undefined end");
+    std::cout << "Undefined end" << std::endl;
     break;
   }
 }
@@ -166,8 +167,9 @@ void Board::castle(CastleSide castleSide) {
 }
 
 void Board::drawOffer() {
-  // To be implemented, make some kind of notification on the side of the board
-  std::println(std::format("{} offered a draw!", playerColorCStr(turn)));
+    // To be implemented, make some kind of notification on the side of the board
+    const std::string str = std::format("{} offered a draw!", playerColorCStr(turn));
+    std::cout << str.c_str() << std::endl;
 }
 
 // public:
@@ -261,7 +263,7 @@ const Square Board::findMove(const Move &move) {
     //looping through the whole board and finding which piece can move to move.to.
     //should use the attributes inside the move structs, specifically when the piece is known, and when the move results in a check
     //captures are only relevant for enpessant which is already covered in the doMove function.
-    //TODO: find a way to integrate checks
+    
     //TODO: implement function for each piece similar to the getMoves functions but which has move.to as input argument
 
   std::vector<Square> ret{};
@@ -275,14 +277,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
             getPawnMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                if (move.check) {
-                  //TODO: implement check case
-
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
                 }
-                return Square{col, row};
-              }
             }
+            assert(0);
           }
         }
       }
@@ -295,10 +300,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
             getRookMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                return Square{col, row};
-              }
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
+                }
             }
+            assert(0);
           }
         }
       }
@@ -311,10 +323,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
             getKnightMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                return Square{col, row}; 
-              }
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
+                }
             }
+            assert(0);
           }
         }
       }
@@ -327,10 +346,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
             getBishopMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                return Square{col, row}; 
-              }
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
+                }
             }
+            assert(0);
           }
         }
       } 
@@ -343,10 +369,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
             getQueenMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                return Square{col, row}; 
-              }
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
+                }
             }
+            assert(0);
           }
         }
       }
@@ -359,10 +392,17 @@ const Square Board::findMove(const Move &move) {
           if (piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
             getKingMoves(piece, ret);
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                return Square{col, row}; 
-              }
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
+                }
             }
+            assert(0);
           }
         }
       }
@@ -408,18 +448,22 @@ const Square Board::findMove(const Move &move) {
             }
               
             for (auto& entry : ret) {
-              if (entry == move.to) {
-                if (move.check) {
-                  // TODO: implement check func
-
+                if (entry == move.to) {
+                    if (move.check) {
+                        if(moveIsCheck(entry, move.to)) {
+                            return Square{col, row};
+                        }
+                    } else {
+                        return Square{col, row};
+                    }
                 }
-                return Square{col, row}; 
-              }
             }
             ret.clear();
           }
         }
       }
+
+    assert(0);
   }
 
 }
@@ -811,4 +855,65 @@ void Board::doMove(const Move &move) {
   movePiece(from, move.to);
 
   return;
+}
+
+bool Board::moveIsCheck(const Square from, const Square to) {
+    std::unique_ptr<Piece> tempPiece{};
+    if (cells[to.col][to.row] != nullptr) tempPiece = std::move(cells[to.col][to.row]);
+
+    Square king{};
+    for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+            
+            if (cells[col][row]->getName() == PieceName::king && cells[col][row]->getPlayerColor() != turn) {
+                king = Square{col, row};
+            }
+        }
+    } 
+
+
+    std::vector<Square> ret{};
+    for (Column col = Column::A; col <= Column::H; ++col) {
+        for (Row row = Row::_1; row <= Row::_8; ++row) {
+            auto& piece = cells[col][row];
+            if (piece == nullptr) continue;
+            if (piece->getPlayerColor() != turn) continue;
+            
+            switch(piece->getName()) {
+                case PieceName::pawn:
+                getPawnMoves(piece, ret);
+                break;
+
+                case PieceName::rook:
+                getRookMoves(piece, ret);
+                break;
+
+                case PieceName::knight:
+                getKnightMoves(piece, ret);
+                break;
+
+                case PieceName::bishop:
+                getBishopMoves(piece, ret);
+                break;
+
+                case PieceName::queen:
+                getQueenMoves(piece, ret);
+                break;
+
+                case PieceName::king:
+                getKingMoves(piece, ret);
+                break;
+
+                default:
+                assert(0);
+            }
+
+            for (auto& e : ret) {
+                if (e == king) return true;
+            }
+        }
+    }
+
+    if (tempPiece != nullptr) cells[to.col][to.row] = std::move(tempPiece);
+    return false;
 }

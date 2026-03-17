@@ -171,7 +171,7 @@ void parseMoveSet(std::vector<std::string>& moveSet, std::vector<Move>& dest) {
     assert(!(moveSet.empty()));
     assert(dest.empty());
     
-    dest.reserve(moveset.size());
+    dest.reserve(moveSet.size());
     for (auto& moveStr : moveSet) {
         assert(!(moveStr.empty()));
         dest.emplace_back(parseMove(moveStr));

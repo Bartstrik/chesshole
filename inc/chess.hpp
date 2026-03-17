@@ -154,4 +154,5 @@ class Board {
 
     //Using the Move type, current board position and the game rules, we try to determine the actual move itself.
     void doMove(const Move& move);
+    bool moveIsCheck(const Square from, const Square to);
 };
