@@ -80,8 +80,8 @@ void Window::drawWindow() {
 
 void Window::updateWindow() {
     board->boardImage = board->originalBoardImage;
-    for (uint8_t col_iter = static_cast<uint8_t>(Column::A); col_iter <= static_cast<uint8_t>(Column::H); col_iter++) {
-        for (uint8_t row_iter = static_cast<uint8_t>(Row::_1); row_iter <= static_cast<uint8_t>(Row::_8); row_iter++) {
+    for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
+        for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
             if (board->cells[col_iter][row_iter] != nullptr) {
                 std::unique_ptr<Piece>& piece = board->cells[col_iter][row_iter];
                 ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);

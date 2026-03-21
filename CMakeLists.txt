@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 
 add_executable(main)
 
@@ -18,6 +17,7 @@ add_subdirectory(../third_party/raylib raylib_build)
 #source files
 target_sources(main PRIVATE
     src/main.cpp
+    src/common.cpp
     src/chess.cpp
     src/render.cpp
     src/lexer.cpp

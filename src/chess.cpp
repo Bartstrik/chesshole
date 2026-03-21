@@ -462,10 +462,9 @@ const Square Board::findMove(const Move &move) {
           }
         }
       }
-
-    assert(0);
   }
-
+  assert(0);
+  return Square{Column::none, Row::none};
 }
 
 void Board::movePiece(const Square from, const Square to) {
@@ -529,8 +528,8 @@ void Board::getPawnMoves(std::unique_ptr<Piece> &piece,
   assert(piece->getPlayerColor() == PlayerColor::white ||
          piece->getPlayerColor() == PlayerColor::black);
 
-  const Column col = piece->getCol();
-  const Row row = piece->getRow();
+  Column col = piece->getCol();
+  Row row = piece->getRow();
   PlayerColor color = piece->getPlayerColor();
   int8_t colorDiff;
 
@@ -543,12 +542,12 @@ void Board::getPawnMoves(std::unique_ptr<Piece> &piece,
     if ((color == PlayerColor::white && row == Row::_2) ||
         (color == PlayerColor::black && row == Row::_7)) {
       if (cells[col][row + colorDiff] == nullptr)
-        to.emplace_back(Square{col, row + 2 * colorDiff});
+        to.emplace_back(Square{col, row + (int8_t)(2 * colorDiff)});
     }
   }
   // captures
   if (col != Column::A &&
-      cells[col - 1][row + colorDiff]->getPlayerColor() != color)
+      cells[col - (int8_t)1][row + colorDiff]->getPlayerColor() != color)
     to.emplace_back(Square{col - 1, row + colorDiff});
   if (col != Column::H &&
       cells[col + 1][row + colorDiff]->getPlayerColor() != color)
