@@ -10,7 +10,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(main)
 
 ### External libs
-add_subdirectory(../third_party/raylib raylib_build)
+add_subdirectory(raylib raylib_build)
 
 
 ### This Project
