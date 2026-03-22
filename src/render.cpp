@@ -79,11 +79,12 @@ void Window::drawWindow() {
 }
 
 void Window::updateWindow() {
-    board->boardImage = board->originalBoardImage;
+    //board->boardImage = board->originalBoardImage;
+    board->boardImage = ImageCopy(board->originalBoardImage);
     for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
         for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-            if (board->cells[col_iter][row_iter] != nullptr) {
-                std::unique_ptr<Piece>& piece = board->cells[col_iter][row_iter];
+            auto& piece = board->cells[col_iter][row_iter];
+            if (piece != nullptr) {
                 ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
             }
         }

@@ -517,7 +517,6 @@ void Board::movePiece(const Square from, const Square to) {
   toPiece->setCol(to.col);
   toPiece->setRow(to.row);
 
-  std::cout << "moved Piece with col = " << std::to_underlying(from.col) << ", row = " << std::to_underlying(from.row) << " To col = " << std::to_underlying(to.col) << ", row = " << std::to_underlying(to.row) << std::endl;
 
   return;
 }
@@ -666,7 +665,7 @@ void Board::getKnightMoves(std::unique_ptr<Piece> &piece,
           row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
         if (cells[col + colDiff][row + rowDiff] == nullptr ||
             cells[col + colDiff][row + rowDiff]->getPlayerColor() != color) {
-          to.emplace_back(col + colDiff, row + rowDiff);
+          to.emplace_back(Square{col + colDiff, row + rowDiff});
         }
       }
     }
@@ -678,7 +677,7 @@ void Board::getKnightMoves(std::unique_ptr<Piece> &piece,
           row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
         if (cells[col + colDiff][row + rowDiff] == nullptr ||
             cells[col + colDiff][row + rowDiff]->getPlayerColor() != color) {
-          to.emplace_back(col + colDiff, row + rowDiff);
+          to.emplace_back(Square{col + colDiff, row + rowDiff});
         }
       }
     }
@@ -833,8 +832,9 @@ void Board::getKingMoves(std::unique_ptr<Piece> &piece,
 }
 
 void Board::doMove(const Move &move) {
-  check = move.check;
-
+  std::cout << "Attempting to do move : piece = " << move.piece;
+  std::cout << ", From col = " << move.from.col << ", row = " << move.from.row;
+  std::cout << ", To col = " << move.to.col << ", row = " << move.to.row << std::endl;
   // if the from square is given, the to square is also always given. else they
   // should be defined as none
   if (move.from.col >= Column::A && move.from.col <= Column::H &&

@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <utility>
+#include <cassert>
+#include <iostream>
 
 #define BOARD_WIDTH 410
 #define BOARD_HEIGHT 410
@@ -50,6 +52,9 @@ enum class PieceName : int8_t {
     king
 };
 
+std::ostream& operator<<(std::ostream& os, const PieceName& piece);
+
+
 enum class Column : int8_t {
     A,
     B,
@@ -62,6 +67,8 @@ enum class Column : int8_t {
     none,
 };
 
+std::ostream& operator<<(std::ostream& os, const Column& col);
+
 enum class Row : int8_t {
     _1,
     _2,
@@ -73,6 +80,8 @@ enum class Row : int8_t {
     _8,
     none,
 };
+
+std::ostream& operator<<(std::ostream& os, const Row& row);
 
 struct Square {
     Column col = Column::none;
