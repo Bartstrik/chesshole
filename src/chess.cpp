@@ -2,6 +2,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <format>
 
 #include "chess.hpp"
 #include "cassert"
@@ -84,6 +85,10 @@ King::~King() {}
 
 // Board Class
 // private:
+void Board::toggleTurn() {
+  turn = (turn == PlayerColor::black) ? PlayerColor::white : PlayerColor::black;
+}
+
 void Board::endGame(End end) {
   switch (end) {
   case End::whiteWins:
@@ -109,25 +114,25 @@ void Board::transformPiece(Square square, PieceName pieceName) {
   case PieceName::bishop:
     cells[square.col][square.row] = std::make_unique<Bishop>(
         square.col, square.row, turn,
-        std::format("../../img/{}/bishop1.png", playerColorCStr(turn)));
+        std::format("{}/img/{}/bishop1.png", PROJECT_ROOT_DIR, playerColorCStr(turn)));
     break;
 
   case PieceName::knight:
     cells[square.col][square.row] = std::make_unique<Knight>(
         square.col, square.row, turn,
-        std::format("../../img/{}/knight1.png", playerColorCStr(turn)));
+        std::format("{}/img/{}/knight1.png", PROJECT_ROOT_DIR, playerColorCStr(turn)));
     break;
 
   case PieceName::rook:
     cells[square.col][square.row] = std::make_unique<Rook>(
         square.col, square.row, turn,
-        std::format("../../img/{}/rook.png", playerColorCStr(turn)));
+        std::format("{}/img/{}/rook.png", PROJECT_ROOT_DIR, playerColorCStr(turn)));
     break;
 
   case PieceName::queen:
     cells[square.col][square.row] = std::make_unique<Queen>(
         square.col, square.row, turn,
-        std::format("../../img/{}/queen.png", playerColorCStr(turn)));
+        std::format("{}/img/{}/queen.png", PROJECT_ROOT_DIR, playerColorCStr(turn)));
     break;
   default:
     assert(0);
@@ -147,19 +152,27 @@ void Board::castle(CastleSide castleSide) {
   }
 
   if (castleSide == CastleSide::kingSide) {
+    assert(cells[Column::E][row] != nullptr);
     assert(cells[Column::E][row]->getName() == PieceName::king);
+    assert(cells[Column::E][row]->getPlayerColor() == turn);
     assert(cells[Column::F][row] == nullptr);
     assert(cells[Column::G][row] == nullptr);
+    assert(cells[Column::H][row] != nullptr);
     assert(cells[Column::H][row]->getName() == PieceName::rook);
+    assert(cells[Column::H][row]->getPlayerColor() == turn);
 
     cells[Column::F][row] = std::move(cells[Column::E][row]);
     cells[Column::G][row] = std::move(cells[Column::H][row]);
   } else {
+    assert(cells[Column::A][row] != nullptr);
     assert(cells[Column::A][row]->getName() == PieceName::rook);
+    assert(cells[Column::A][row]->getPlayerColor() == turn);
     assert(cells[Column::C][row] == nullptr);
     assert(cells[Column::C][row] == nullptr);
     assert(cells[Column::D][row] == nullptr);
+    assert(cells[Column::E][row] != nullptr);
     assert(cells[Column::E][row]->getName() == PieceName::king);
+    assert(cells[Column::E][row]->getPlayerColor() == turn);
 
     cells[Column::C][row] = std::move(cells[Column::E][row]);
     cells[Column::D][row] = std::move(cells[Column::A][row]);
@@ -190,73 +203,77 @@ const PlayerColor Board::getTurn() { return turn; }
 void Board::setPieces() {
   // white piece
   cells[Column::A][Row::_2] = std::make_unique<Pawn>(
-      Column::A, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::A, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::B][Row::_2] = std::make_unique<Pawn>(
-      Column::B, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::B, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::C][Row::_2] = std::make_unique<Pawn>(
-      Column::C, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::C, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::D][Row::_2] = std::make_unique<Pawn>(
-      Column::D, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::D, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::E][Row::_2] = std::make_unique<Pawn>(
-      Column::E, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::E, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::F][Row::_2] = std::make_unique<Pawn>(
-      Column::F, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::F, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::G][Row::_2] = std::make_unique<Pawn>(
-      Column::G, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::G, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::H][Row::_2] = std::make_unique<Pawn>(
-      Column::H, Row::_2, PlayerColor::white, "../../img/white/pawn1.png");
+      Column::H, Row::_2, PlayerColor::white, std::format("{}/img/white/pawn1.png", PROJECT_ROOT_DIR));
 
   cells[Column::A][Row::_1] = std::make_unique<Rook>(
-      Column::A, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
+      Column::A, Row::_1, PlayerColor::white, std::format("{}/img/white/rook1.png", PROJECT_ROOT_DIR));
   cells[Column::B][Row::_1] = std::make_unique<Knight>(
-      Column::B, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+      Column::B, Row::_1, PlayerColor::white, std::format("{}/img/white/knight1.png", PROJECT_ROOT_DIR));
   cells[Column::C][Row::_1] = std::make_unique<Bishop>(
-      Column::C, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+      Column::C, Row::_1, PlayerColor::white, std::format("{}/img/white/bishop1.png", PROJECT_ROOT_DIR));
   cells[Column::D][Row::_1] = std::make_unique<Queen>(
-      Column::D, Row::_1, PlayerColor::white, "../../img/white/queen1.png");
+      Column::D, Row::_1, PlayerColor::white, std::format("{}/img/white/queen1.png", PROJECT_ROOT_DIR));
   cells[Column::E][Row::_1] = std::make_unique<King>(
-      Column::E, Row::_1, PlayerColor::white, "../../img/white/king1.png");
+      Column::E, Row::_1, PlayerColor::white, std::format("{}/img/white/king1.png", PROJECT_ROOT_DIR));
   cells[Column::F][Row::_1] = std::make_unique<Bishop>(
-      Column::F, Row::_1, PlayerColor::white, "../../img/white/bishop1.png");
+      Column::F, Row::_1, PlayerColor::white, std::format("{}/img/white/bishop1.png", PROJECT_ROOT_DIR));
   cells[Column::G][Row::_1] = std::make_unique<Knight>(
-      Column::G, Row::_1, PlayerColor::white, "../../img/white/knight1.png");
+      Column::G, Row::_1, PlayerColor::white, std::format("{}/img/white/knight1.png", PROJECT_ROOT_DIR));
   cells[Column::H][Row::_1] = std::make_unique<Rook>(
-      Column::H, Row::_1, PlayerColor::white, "../../img/white/rook1.png");
+      Column::H, Row::_1, PlayerColor::white, std::format("{}/img/white/rook1.png", PROJECT_ROOT_DIR));
 
   // black pieces
   cells[Column::A][Row::_7] = std::make_unique<Pawn>(
-      Column::A, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::A, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::B][Row::_7] = std::make_unique<Pawn>(
-      Column::B, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::B, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::C][Row::_7] = std::make_unique<Pawn>(
-      Column::C, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::C, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::D][Row::_7] = std::make_unique<Pawn>(
-      Column::D, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::D, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::E][Row::_7] = std::make_unique<Pawn>(
-      Column::E, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::E, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::F][Row::_7] = std::make_unique<Pawn>(
-      Column::F, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::F, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::G][Row::_7] = std::make_unique<Pawn>(
-      Column::G, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::G, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
   cells[Column::H][Row::_7] = std::make_unique<Pawn>(
-      Column::H, Row::_7, PlayerColor::black, "../../img/black/pawn1.png");
+      Column::H, Row::_7, PlayerColor::black, std::format("{}/img/black/pawn1.png", PROJECT_ROOT_DIR));
 
   cells[Column::A][Row::_8] = std::make_unique<Rook>(
-      Column::A, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+      Column::A, Row::_8, PlayerColor::black, std::format("{}/img/black/rook1.png", PROJECT_ROOT_DIR));
   cells[Column::B][Row::_8] = std::make_unique<Knight>(
-      Column::B, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+      Column::B, Row::_8, PlayerColor::black, std::format("{}/img/black/knight1.png", PROJECT_ROOT_DIR));
   cells[Column::C][Row::_8] = std::make_unique<Bishop>(
-      Column::C, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+      Column::C, Row::_8, PlayerColor::black, std::format("{}/img/black/bishop1.png", PROJECT_ROOT_DIR));
   cells[Column::D][Row::_8] = std::make_unique<Queen>(
-      Column::D, Row::_8, PlayerColor::black, "../../img/black/queen1.png");
+      Column::D, Row::_8, PlayerColor::black, std::format("{}/img/black/queen1.png", PROJECT_ROOT_DIR));
   cells[Column::E][Row::_8] = std::make_unique<King>(
-      Column::E, Row::_8, PlayerColor::black, "../../img/black/king1.png");
+      Column::E, Row::_8, PlayerColor::black, std::format("{}/img/black/king1.png", PROJECT_ROOT_DIR));
   cells[Column::F][Row::_8] = std::make_unique<Bishop>(
-      Column::F, Row::_8, PlayerColor::black, "../../img/black/bishop1.png");
+      Column::F, Row::_8, PlayerColor::black, std::format("{}/img/black/bishop1.png", PROJECT_ROOT_DIR));
   cells[Column::G][Row::_8] = std::make_unique<Knight>(
-      Column::G, Row::_8, PlayerColor::black, "../../img/black/knight1.png");
+      Column::G, Row::_8, PlayerColor::black, std::format("{}/img/black/knight1.png", PROJECT_ROOT_DIR));
   cells[Column::H][Row::_8] = std::make_unique<Rook>(
-      Column::H, Row::_8, PlayerColor::black, "../../img/black/rook1.png");
+      Column::H, Row::_8, PlayerColor::black, std::format("{}/img/black/rook1.png", PROJECT_ROOT_DIR));
+}
+
+void Board::removePiece(const Square square) {
+    cells[square.col][square.row] = nullptr;
 }
 
 const Square Board::findMove(const Move &move) {
@@ -273,8 +290,8 @@ const Square Board::findMove(const Move &move) {
     case PieceName::pawn:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
             getPawnMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -287,17 +304,18 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       }
+      assert(0);
       break;
  
     case PieceName::rook:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
             getRookMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -310,17 +328,19 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       }
+      assert(0);
       break;
+
     
     case PieceName::knight:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
             getKnightMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -333,17 +353,18 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       }
+      assert(0);
       break;
       
      case PieceName::bishop:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
             getBishopMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -356,17 +377,18 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       } 
+      assert(0);
       break;
 
     case PieceName::queen:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
             getQueenMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -379,17 +401,18 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       }
+      assert(0);
       break;
 
     case PieceName::king:
       for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-          std::unique_ptr<Piece>& piece = cells[col][row];
-          if (piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
+          auto& piece = cells[col][row];
+          if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
             getKingMoves(piece, ret);
             for (auto& entry : ret) {
                 if (entry == move.to) {
@@ -402,17 +425,18 @@ const Square Board::findMove(const Move &move) {
                     }
                 }
             }
-            assert(0);
+            ret.clear();
           }
         }
       }
+      assert(0);
       break;
 
     default:
       //Unknown piecename case:
       for (Column col = Column::A; col <= Column::H; ++col) {
           for (Row row = Row::_1; row <= Row::_8; ++row) {
-            std::unique_ptr<Piece>& piece = cells[col][row];
+            auto& piece = cells[col][row];
             if (piece == nullptr) continue;
 
             if (piece->getPlayerColor() == turn) {
@@ -473,8 +497,8 @@ void Board::movePiece(const Square from, const Square to) {
   assert(to.col >= Column::A && to.col <= Column::H);
   assert(to.row >= Row::_1 && to.row <= Row::_8);
 
-  std::unique_ptr<Piece> &fromPiece = cells[from.col][from.row];
-  std::unique_ptr<Piece> &toPiece = cells[to.col][to.row];
+  auto& fromPiece = cells[from.col][from.row];
+  auto& toPiece = cells[to.col][to.row];
 
   // making sure there is a piece at the from position.
   assert(fromPiece != nullptr);
@@ -492,11 +516,16 @@ void Board::movePiece(const Square from, const Square to) {
   toPiece = std::move(fromPiece);
   toPiece->setCol(to.col);
   toPiece->setRow(to.row);
+
+  std::cout << "moved Piece with col = " << std::to_underlying(from.col) << ", row = " << std::to_underlying(from.row) << " To col = " << std::to_underlying(to.col) << ", row = " << std::to_underlying(to.row) << std::endl;
+
   return;
 }
 
 void Board::getMoves(const Column col, const Row row, std::vector<Square> &to) {
-  std::unique_ptr<Piece> &piece = cells[col][row];
+  auto& piece = cells[col][row];
+  if (piece == nullptr) return;
+
   switch (piece->getName()) {
   case PieceName::pawn:
     getPawnMoves(piece, to);
@@ -533,7 +562,7 @@ void Board::getPawnMoves(std::unique_ptr<Piece> &piece,
   PlayerColor color = piece->getPlayerColor();
   int8_t colorDiff;
 
-  colorDiff = 1 ? color == PlayerColor::white : colorDiff = -1;
+  colorDiff = (color == PlayerColor::white) ? 1 : -1;
 
   // simple move
   if (cells[col][row + colorDiff] == nullptr) {
@@ -546,12 +575,19 @@ void Board::getPawnMoves(std::unique_ptr<Piece> &piece,
     }
   }
   // captures
-  if (col != Column::A &&
-      cells[col - (int8_t)1][row + colorDiff]->getPlayerColor() != color)
-    to.emplace_back(Square{col - 1, row + colorDiff});
-  if (col != Column::H &&
-      cells[col + 1][row + colorDiff]->getPlayerColor() != color)
-    to.emplace_back(Square{col + 1, row + colorDiff});
+  if (col != Column::A) {
+      auto& capturePiece = cells[row - 1][row + colorDiff];
+      if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
+          to.emplace_back(Square{col - 1, row + colorDiff});
+      }
+  }
+  
+  if (col != Column::H) {
+      auto& capturePiece = cells[row + 1][row + colorDiff];
+      if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
+          to.emplace_back(Square{col + 1, row + colorDiff});
+      }
+  }
 }
 
 void Board::getRookMoves(std::unique_ptr<Piece> &piece,
@@ -804,19 +840,21 @@ void Board::doMove(const Move &move) {
   if (move.from.col >= Column::A && move.from.col <= Column::H &&
       move.from.row >= Row::_1 && move.from.row <= Row::_8) {
     movePiece(move.from, move.to);
+    toggleTurn();
     return;
   }
 
   if (move.enPassant) {
     Square from, to = {};
     from.col = move.from.col;
-    move.to.row == Row::_3 ? from.row = Row::_4 : from.row = Row::_5;
+    from.row = (move.to.row == Row::_3) ? Row::_4 : Row::_5;
 
     to.col = move.to.col;
     to.row = move.to.row;
 
     removePiece(Square{to.col, from.row});
     movePiece(from, to);
+    toggleTurn();
     return;
   }
 
@@ -826,15 +864,17 @@ void Board::doMove(const Move &move) {
 
     Square from, to = {};
     from.col = move.to.col;
-    move.to.row == Row::_1 ? from.row = Row::_2 : from.row = Row::_7;
+    from.row = (move.to.row == Row::_1) ? Row::_2 : Row::_7;
     to = move.to;
     movePiece(from, to);
+    toggleTurn();
     return;
   }
 
   if (move.castle) {
     assert(move.castleSide != CastleSide::none);
     castle(move.castleSide);
+    toggleTurn();
     return;
   }
 
@@ -852,7 +892,7 @@ void Board::doMove(const Move &move) {
   //base case 
   const Square from = findMove(move);
   movePiece(from, move.to);
-
+  toggleTurn();
   return;
 }
 
@@ -863,8 +903,8 @@ bool Board::moveIsCheck(const Square from, const Square to) {
     Square king{};
     for (Column col = Column::A; col <= Column::H; ++col) {
         for (Row row = Row::_1; row <= Row::_8; ++row) {
-            
-            if (cells[col][row]->getName() == PieceName::king && cells[col][row]->getPlayerColor() != turn) {
+            auto& piece = cells[col][row];
+            if (piece != nullptr && piece->getName() == PieceName::king && piece->getPlayerColor() != turn) {
                 king = Square{col, row};
             }
         }

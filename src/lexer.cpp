@@ -4,7 +4,7 @@
 
 
 void parseAN(const std::string& str, std::vector<std::string>& dest) {
-    assert(!(dest.empty()));
+    assert((dest.empty()));
     assert(!(str.empty()));
 
     //split the string into substrings and remove the ones that contain a '.' 
@@ -123,17 +123,69 @@ void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std:
             if (toColSet) {
                  move.from.col = move.to.col;
             } 
-            move.to.col = static_cast<Column>(std::toupper(*it));
+            switch (*it) {
+                case 'a':
+                    move.to.col = Column::A;
+                    break;
+                case 'b':
+                    move.to.col = Column::B;
+                    break;
+                case 'c':
+                    move.to.col = Column::C;
+                    break;
+                case 'd':
+                    move.to.col = Column::D;
+                    break;
+                case 'e':
+                    move.to.col = Column::E;
+                    break;
+                case 'f':
+                    move.to.col = Column::F;
+                    break;
+                case 'g':
+                    move.to.col = Column::G;
+                    break;
+                case 'h':
+                    move.to.col = Column::H;
+                    break;
+                default:
+                    assert(0);
+            }
             toColSet = true;
             continue; 
         }
-
-        if (*it >= 1 && *it <= 8) {
+        if (*it >= '1' && *it <= '8') {
             if (toRowSet){
                 move.from.row = move.to.row;
             }
-            uint8_t row = static_cast<uint8_t>(*(it + 1));
-            move.to.row = static_cast<Row>(row - 1);
+            switch (*it) {
+                case '1':
+                    move.to.row = Row::_1;
+                    break;
+                case '2':
+                    move.to.row = Row::_2; 
+                    break;
+                case '3':
+                    move.to.row = Row::_3;
+                    break;
+                case '4':
+                    move.to.row = Row::_4;
+                    break;
+                case '5':
+                    move.to.row = Row::_5;
+                    break;
+                case '6':
+                    move.to.row = Row::_6;
+                    break;
+                case '7':
+                    move.to.row = Row::_7;
+                    break;
+                case '8':
+                    move.to.row = Row::_8; 
+                    break;
+                default:
+                    assert(0);
+            }
             toRowSet = true;
             continue;
         }

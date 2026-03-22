@@ -14,6 +14,11 @@ add_subdirectory(raylib raylib_build)
 
 
 ### This Project
+#defines
+target_compile_definitions(main
+    PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}"
+)
+
 #source files
 target_sources(main PRIVATE
     src/main.cpp
