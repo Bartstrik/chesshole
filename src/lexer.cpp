@@ -1,6 +1,5 @@
 #include "lexer.hpp"
 #include <cassert>
-#include <cctype>
 
 
 void parseAN(const std::string& str, std::vector<std::string>& dest) {
@@ -38,7 +37,7 @@ Nxd7 Nxd7 22. b4 Be7 23. Rad1 Nf6 24. Na4 O-O 25. Nc5 Bxc5+ 26. bxc5 Rbc8 27.
 Rd6 Rxc5 28. Rxa6 Rxc2 29. a4 Ra2 30. a5 h6 31. Rc1 Rb8 32. Ra7 Nd5 33. a6 Rb6
 34. Ra8+ Kh7 35. a7 Rba6 0-1
 */
-const Move parseMove(const std::string str) {
+const Move parseMove(const std::string& str) {
     assert(!(str.empty()));
 
     Move move{};

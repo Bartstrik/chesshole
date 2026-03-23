@@ -22,18 +22,18 @@ class Piece {
     Piece(const PieceName& name, const Column& col, const Row& row, const PlayerColor& player, const std::string& imagePath);
     virtual ~Piece();
 
-    const PieceName getName();
+    const PieceName getName() const;
     void setName(const PieceName& name);
     
-    const Row getRow();
+    const Row getRow() const;
     void setRow(const Row& row);
     
-    const Column getCol();
+    const Column getCol() const;
     void setCol(const Column& col);
     
-    const PlayerColor getPlayerColor();
+    const PlayerColor getPlayerColor() const;
 
-    const Image& getImage();
+    const Image& getImage() const;
     void setImage(const std::string& imagePath);
 };
 
@@ -119,19 +119,19 @@ class Board {
     bool check = false;
 
     void toggleTurn();
-    void endGame(End end);
-    void transformPiece(Square square, PieceName pieceName);
-    void castle(CastleSide castleSide);
-    void drawOffer();
-    void removePiece(const Square square);
+    void endGame(const End& end) const;
+    void transformPiece(const Square& square, const PieceName& pieceName);
+    void castle(const CastleSide& castleSide);
+    void drawOffer() const;
+    void removePiece(const Square& square);
     const Square findMove(const Move& move);
 
-    void getPawnMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
-    void getRookMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
-    void getKnightMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
-    void getBishopMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
-    void getQueenMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
-    void getKingMoves(std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getPawnMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getRookMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getKnightMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getBishopMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getQueenMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
+    void getKingMoves(const std::unique_ptr<Piece>& piece, std::vector<Square>& to);
 
 
 
@@ -143,16 +143,16 @@ class Board {
     Board(const std::string& boardImagePath);
     virtual ~Board();
 
-    const std::string getHistory();
-    const PlayerColor getTurn();
+    const std::string getHistory() const;
+    const PlayerColor getTurn() const;
     void setPieces();
-    void movePiece(const Square from, const Square to);
+    void movePiece(const Square& from, const Square& to);
 
     // getMoves expects an empty vector ref as argument, and it will add the squares the piece can move to. 
     // the vector is an argument and not a return value to prevent unnecessary copying or allocating it on the heap. 
     // this function is overriden by the child classes
-    void getMoves(const Column col, const Row row, std::vector<Square>& to);
+    void getMoves(const Column& col, const Row& row, std::vector<Square>& to);
         //Using the Move type, current board position and the game rules, we try to determine the actual move itself.
     void doMove(const Move& move);
-    bool moveIsCheck(const Square from, const Square to);
+    const bool moveIsCheck(const Square& from, const Square& to);
 };

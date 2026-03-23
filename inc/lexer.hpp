@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include "chess.hpp"
 #include "common.hpp"
 
 /*
@@ -13,7 +12,7 @@
 void parseAN(const std::string& str, std::vector<std::string>& dest);
 
 
-const Move parseMove(const std::string str);
+const Move parseMove(const std::string& str);
 
 void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std::string::const_iterator end);
 

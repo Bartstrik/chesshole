@@ -23,18 +23,18 @@ Piece::Piece(const PieceName &name, const Column &col, const Row &row,
 
 Piece::~Piece() {}
 
-const PieceName Piece::getName() { return name; }
+const PieceName Piece::getName() const { return name; }
 void Piece::setName(const PieceName &name) { this->name = name; }
 
-const Row Piece::getRow() { return row; }
+const Row Piece::getRow() const { return row; }
 void Piece::setRow(const Row &row) { this->row = row; }
 
-const Column Piece::getCol() { return col; }
+const Column Piece::getCol() const { return col; }
 void Piece::setCol(const Column &col) { this->col = col; }
 
-const PlayerColor Piece::getPlayerColor() { return player; }
+const PlayerColor Piece::getPlayerColor() const { return player; }
 
-const Image &Piece::getImage() { return image; }
+const Image &Piece::getImage() const { return image; }
 void Piece::setImage(const std::string &imagePath) {
   assert(!imagePath.empty());
   image = LoadImage(imagePath.c_str());
@@ -89,7 +89,7 @@ void Board::toggleTurn() {
   turn = (turn == PlayerColor::black) ? PlayerColor::white : PlayerColor::black;
 }
 
-void Board::endGame(End end) {
+void Board::endGame(const End& end) const {
   switch (end) {
   case End::whiteWins:
     std::cout << "White wins!" << std::endl;
@@ -109,7 +109,7 @@ void Board::endGame(End end) {
   }
 }
 
-void Board::transformPiece(Square square, PieceName pieceName) {
+void Board::transformPiece(const Square& square, const PieceName& pieceName) {
   switch (pieceName) {
   case PieceName::bishop:
     cells[square.col][square.row] = std::make_unique<Bishop>(
@@ -139,7 +139,7 @@ void Board::transformPiece(Square square, PieceName pieceName) {
   }
 }
 
-void Board::castle(CastleSide castleSide) {
+void Board::castle(const CastleSide& castleSide) {
   assert(castleSide == CastleSide::kingSide ||
          castleSide == CastleSide::queenSide);
   Row row;
@@ -179,7 +179,7 @@ void Board::castle(CastleSide castleSide) {
   }
 }
 
-void Board::drawOffer() {
+void Board::drawOffer() const {
     // To be implemented, make some kind of notification on the side of the board
     const std::string str = std::format("{} offered a draw!", playerColorCStr(turn));
     std::cout << str.c_str() << std::endl;
@@ -195,8 +195,8 @@ Board::Board(const std::string &boardImagePath) {
 
 Board::~Board() {}
 
-const std::string Board::getHistory() { return history; }
-const PlayerColor Board::getTurn() { return turn; }
+const std::string Board::getHistory() const { return history; }
+const PlayerColor Board::getTurn() const { return turn; }
 
 // should make this pick a random image from the pieces folder instead of
 // hardcoding it
@@ -272,7 +272,7 @@ void Board::setPieces() {
       Column::H, Row::_8, PlayerColor::black, std::format("{}/img/black/rook1.png", PROJECT_ROOT_DIR));
 }
 
-void Board::removePiece(const Square square) {
+void Board::removePiece(const Square& square) {
     cells[square.col][square.row] = nullptr;
 }
 
@@ -491,7 +491,7 @@ const Square Board::findMove(const Move &move) {
   return Square{Column::none, Row::none};
 }
 
-void Board::movePiece(const Square from, const Square to) {
+void Board::movePiece(const Square& from, const Square& to) {
   assert(from.col >= Column::A && from.col <= Column::H);
   assert(from.row >= Row::_1 && from.row <= Row::_8);
   assert(to.col >= Column::A && to.col <= Column::H);
@@ -521,7 +521,7 @@ void Board::movePiece(const Square from, const Square to) {
   return;
 }
 
-void Board::getMoves(const Column col, const Row row, std::vector<Square> &to) {
+void Board::getMoves(const Column& col, const Row& row, std::vector<Square> &to) {
   auto& piece = cells[col][row];
   if (piece == nullptr) return;
 
@@ -549,47 +549,45 @@ void Board::getMoves(const Column col, const Row row, std::vector<Square> &to) {
   }
 }
 
-void Board::getPawnMoves(std::unique_ptr<Piece> &piece,
+void Board::getPawnMoves(const std::unique_ptr<Piece> &piece,
                          std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
   assert(piece->getPlayerColor() == PlayerColor::white ||
          piece->getPlayerColor() == PlayerColor::black);
 
-  Column col = piece->getCol();
-  Row row = piece->getRow();
-  PlayerColor color = piece->getPlayerColor();
-  int8_t colorDiff;
-
-  colorDiff = (color == PlayerColor::white) ? 1 : -1;
+  const Column col = piece->getCol();
+  const Row row = piece->getRow();
+  const PlayerColor color = piece->getPlayerColor();
+  const int8_t colorDiff = (color == PlayerColor::white) ? 1 : -1;
 
   // simple move
   if (cells[col][row + colorDiff] == nullptr) {
-    to.emplace_back(Square{col, row + colorDiff});
+    to.emplace_back(col, row + colorDiff);
     // double first move
     if ((color == PlayerColor::white && row == Row::_2) ||
         (color == PlayerColor::black && row == Row::_7)) {
       if (cells[col][row + colorDiff] == nullptr)
-        to.emplace_back(Square{col, row + (int8_t)(2 * colorDiff)});
+        to.emplace_back(col, row + (int8_t)(2 * colorDiff));
     }
   }
   // captures
   if (col != Column::A) {
       auto& capturePiece = cells[row - 1][row + colorDiff];
       if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
-          to.emplace_back(Square{col - 1, row + colorDiff});
+          to.emplace_back(col - 1, row + colorDiff);
       }
   }
   
   if (col != Column::H) {
       auto& capturePiece = cells[row + 1][row + colorDiff];
       if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
-          to.emplace_back(Square{col + 1, row + colorDiff});
+          to.emplace_back(col + 1, row + colorDiff);
       }
   }
 }
 
-void Board::getRookMoves(std::unique_ptr<Piece> &piece,
+void Board::getRookMoves(const std::unique_ptr<Piece> &piece,
                          std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
@@ -606,7 +604,7 @@ void Board::getRookMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -619,7 +617,7 @@ void Board::getRookMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -630,7 +628,7 @@ void Board::getRookMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -642,13 +640,13 @@ void Board::getRookMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
 }
 
-void Board::getKnightMoves(std::unique_ptr<Piece> &piece,
+void Board::getKnightMoves(const std::unique_ptr<Piece> &piece,
                            std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
@@ -665,7 +663,7 @@ void Board::getKnightMoves(std::unique_ptr<Piece> &piece,
           row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
         if (cells[col + colDiff][row + rowDiff] == nullptr ||
             cells[col + colDiff][row + rowDiff]->getPlayerColor() != color) {
-          to.emplace_back(Square{col + colDiff, row + rowDiff});
+          to.emplace_back(col + colDiff, row + rowDiff);
         }
       }
     }
@@ -677,14 +675,14 @@ void Board::getKnightMoves(std::unique_ptr<Piece> &piece,
           row + rowDiff >= Row::_1 && row + rowDiff <= Row::_8) {
         if (cells[col + colDiff][row + rowDiff] == nullptr ||
             cells[col + colDiff][row + rowDiff]->getPlayerColor() != color) {
-          to.emplace_back(Square{col + colDiff, row + rowDiff});
+          to.emplace_back(col + colDiff, row + rowDiff);
         }
       }
     }
   }
 }
 
-void Board::getBishopMoves(std::unique_ptr<Piece> &piece,
+void Board::getBishopMoves(const std::unique_ptr<Piece> &piece,
                            std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
@@ -720,7 +718,7 @@ void Board::getBishopMoves(std::unique_ptr<Piece> &piece,
   }
 }
 
-void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
+void Board::getQueenMoves(const std::unique_ptr<Piece> &piece,
                           std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
@@ -738,7 +736,7 @@ void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -751,7 +749,7 @@ void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -762,7 +760,7 @@ void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -774,7 +772,7 @@ void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
       break;
     if (cells[col][row] == nullptr ||
         cells[col][row]->getPlayerColor() != color) {
-      to.emplace_back(Square{col, row});
+      to.emplace_back(col, row);
     }
 
   } while (cells[col][row] == nullptr);
@@ -806,7 +804,7 @@ void Board::getQueenMoves(std::unique_ptr<Piece> &piece,
   }
 }
 
-void Board::getKingMoves(std::unique_ptr<Piece> &piece,
+void Board::getKingMoves(const std::unique_ptr<Piece> &piece,
                          std::vector<Square> &to) {
   assert(to.empty());
   assert(piece != nullptr);
@@ -896,9 +894,11 @@ void Board::doMove(const Move &move) {
   return;
 }
 
-bool Board::moveIsCheck(const Square from, const Square to) {
+const bool Board::moveIsCheck(const Square& from, const Square& to) {
     std::unique_ptr<Piece> tempPiece{};
     if (cells[to.col][to.row] != nullptr) tempPiece = std::move(cells[to.col][to.row]);
+    cells[to.col][to.row] = std::move(cells[from.col][from.row]);
+
 
     Square king{};
     for (Column col = Column::A; col <= Column::H; ++col) {
@@ -953,6 +953,8 @@ bool Board::moveIsCheck(const Square from, const Square to) {
         }
     }
 
+
+    cells[from.col][from.row] = std::move(cells[to.col][to.row]);
     if (tempPiece != nullptr) cells[to.col][to.row] = std::move(tempPiece);
     return false;
 }
