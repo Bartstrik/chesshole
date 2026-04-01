@@ -285,11 +285,17 @@ const Square Board::findMove(const Move &move) {
 
   std::vector<Square> ret{};
   
+  const Column colStart = (move.from.col == Column::none) ? Column::A : move.from.col;
+  const Column colEnd = (move.from.col == Column::none) ? Column::H : move.from.col;
+  
+  const Row rowStart = (move.from.row == Row::none) ? Row::_1 : Row::none;
+  const Row rowEnd = (move.from.row == Row::none) ? Row::_8 : Row::none;
+
   //starting with known piecename case:
   switch (move.piece) {
     case PieceName::pawn:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
             getPawnMoves(piece, ret);
@@ -312,8 +318,8 @@ const Square Board::findMove(const Move &move) {
       break;
  
     case PieceName::rook:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
             getRookMoves(piece, ret);
@@ -337,8 +343,8 @@ const Square Board::findMove(const Move &move) {
 
     
     case PieceName::knight:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
             getKnightMoves(piece, ret);
@@ -360,9 +366,9 @@ const Square Board::findMove(const Move &move) {
       assert(0);
       break;
       
-     case PieceName::bishop:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+    case PieceName::bishop:
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
             getBishopMoves(piece, ret);
@@ -385,8 +391,8 @@ const Square Board::findMove(const Move &move) {
       break;
 
     case PieceName::queen:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
             getQueenMoves(piece, ret);
@@ -409,8 +415,8 @@ const Square Board::findMove(const Move &move) {
       break;
 
     case PieceName::king:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-        for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
           auto& piece = cells[col][row];
           if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
             getKingMoves(piece, ret);
@@ -434,8 +440,8 @@ const Square Board::findMove(const Move &move) {
 
     default:
       //Unknown piecename case:
-      for (Column col = Column::A; col <= Column::H; ++col) {
-          for (Row row = Row::_1; row <= Row::_8; ++row) {
+      for (Column col = colStart; col <= colEnd; ++col) {
+        for (Row row = rowStart; row <= rowEnd; ++row) {
             auto& piece = cells[col][row];
             if (piece == nullptr) continue;
 
@@ -573,14 +579,14 @@ void Board::getPawnMoves(const std::unique_ptr<Piece> &piece,
   }
   // captures
   if (col != Column::A) {
-      auto& capturePiece = cells[row - 1][row + colorDiff];
+      auto& capturePiece = cells[col - 1][row + colorDiff];
       if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
           to.emplace_back(col - 1, row + colorDiff);
       }
   }
   
   if (col != Column::H) {
-      auto& capturePiece = cells[row + 1][row + colorDiff];
+      auto& capturePiece = cells[col + 1][row + colorDiff];
       if (capturePiece != nullptr && capturePiece->getPlayerColor() != color) {
           to.emplace_back(col + 1, row + colorDiff);
       }
@@ -742,7 +748,7 @@ void Board::getQueenMoves(const std::unique_ptr<Piece> &piece,
   } while (cells[col][row] == nullptr);
 
   col = piece->getCol();
-  ;
+
   do {
     --col;
     if (col < Column::A)
