@@ -31,6 +31,9 @@ class Piece {
     const Column getCol() const;
     void setCol(const Column& col);
     
+    const Square getSquare() const;
+    void setSquare(const Square& sq);
+
     const PlayerColor getPlayerColor() const;
 
     const Image& getImage() const;

@@ -32,6 +32,9 @@ void Piece::setRow(const Row &row) { this->row = row; }
 const Column Piece::getCol() const { return col; }
 void Piece::setCol(const Column &col) { this->col = col; }
 
+const Square Piece::getSquare() const { return {col, row}; }
+void Piece::setSquare(const Square& sq) { this->col = sq.col; this->row = sq.row; }
+
 const PlayerColor Piece::getPlayerColor() const { return player; }
 
 const Image &Piece::getImage() const { return image; }
@@ -302,7 +305,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -326,7 +329,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -351,7 +354,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -375,7 +378,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -399,7 +402,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -423,7 +426,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -480,7 +483,7 @@ const Square Board::findMove(const Move &move) {
             for (auto& entry : ret) {
                 if (entry == move.to) {
                     if (move.check) {
-                        if(moveIsCheck(entry, move.to)) {
+                        if(moveIsCheck(piece->getSquare(), move.to)) {
                             return Square{col, row};
                         }
                     } else {
@@ -616,7 +619,7 @@ void Board::getRookMoves(const std::unique_ptr<Piece> &piece,
   } while (cells[col][row] == nullptr);
 
   col = piece->getCol();
-  ;
+  
   do {
     --col;
     if (col < Column::A)
@@ -627,6 +630,8 @@ void Board::getRookMoves(const std::unique_ptr<Piece> &piece,
     }
 
   } while (cells[col][row] == nullptr);
+
+  col = piece->getCol();
 
   do {
     ++row;
@@ -640,6 +645,7 @@ void Board::getRookMoves(const std::unique_ptr<Piece> &piece,
   } while (cells[col][row] == nullptr);
 
   row = piece->getRow();
+
   do {
     --row;
     if (row < Row::_1)
@@ -759,6 +765,8 @@ void Board::getQueenMoves(const std::unique_ptr<Piece> &piece,
     }
 
   } while (cells[col][row] == nullptr);
+  
+  col = piece->getCol();
 
   do {
     ++row;
@@ -772,6 +780,7 @@ void Board::getQueenMoves(const std::unique_ptr<Piece> &piece,
   } while (cells[col][row] == nullptr);
 
   row = piece->getRow();
+  
   do {
     --row;
     if (row < Row::_1)
@@ -956,6 +965,7 @@ const bool Board::moveIsCheck(const Square& from, const Square& to) {
             for (auto& e : ret) {
                 if (e == king) return true;
             }
+            ret.clear();
         }
     }
 
