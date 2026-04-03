@@ -120,9 +120,11 @@ class Board {
     bool whiteCanCastle = true;
     bool blackCanCastle = true;
     bool check = false;
+    bool gameDone = false;
+    PlayerColor gameEnd = PlayerColor::none;
 
     void toggleTurn();
-    void endGame(const End& end) const;
+    void endGame(const End& end);
     void transformPiece(const Square& square, const PieceName& pieceName);
     void castle(const CastleSide& castleSide);
     void drawOffer() const;
@@ -148,6 +150,8 @@ class Board {
 
     const std::string getHistory() const;
     const PlayerColor getTurn() const;
+    const bool getGameDone() const;
+    const PlayerColor getGameEnd() const;
     void setPieces();
     void movePiece(const Square& from, const Square& to);
 

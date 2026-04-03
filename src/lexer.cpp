@@ -9,8 +9,9 @@ void parseAN(const std::string& str, std::vector<std::string>& dest) {
     //split the string into substrings and remove the ones that contain a '.' 
     std::size_t len = 0;
     bool valid = true;
+    std::string::const_iterator it;
 
-    for(std::string::const_iterator it = str.begin(); it != str.end(); it++) {
+    for(it = str.begin(); it != str.end(); it++) {
         if (*it == '.') {
             valid = false;
             continue;
@@ -27,6 +28,8 @@ void parseAN(const std::string& str, std::vector<std::string>& dest) {
         }
         len++;
     }
+    //add last entry aswell.
+    dest.push_back(std::string(it - len, it));
     return;
 }
 //A move can start with either a capital letter indicating the piece or with a lower case column indicating a pawn move. 
@@ -48,26 +51,26 @@ const Move parseMove(const std::string& str) {
     switch (*it) {
         case 'R':
             move.piece = PieceName::rook;
-            parseMoveWithPieceKnown(move, it, end);
+            parseMoveWithPieceKnown(move, it + 1, end);
             break;
 
         case 'N':
             move.piece = PieceName::knight;
-            parseMoveWithPieceKnown(move, it, end);
+            parseMoveWithPieceKnown(move, it + 1, end);
             break;
 
         case 'B':
             move.piece = PieceName::bishop;
-            parseMoveWithPieceKnown(move, it, end);
+            parseMoveWithPieceKnown(move, it + 1, end);
             break;
         case 'Q':
             move.piece = PieceName::queen;
-            parseMoveWithPieceKnown(move, it, end);
+            parseMoveWithPieceKnown(move, it + 1, end);
             break;
 
         case 'K':
             move.piece = PieceName::king;
-            parseMoveWithPieceKnown(move, it, end);
+            parseMoveWithPieceKnown(move, it + 1, end);
             break;
 
         case '(':
@@ -81,16 +84,14 @@ const Move parseMove(const std::string& str) {
             move.end = End::draw;
             break;
 
-        case '1':
-            //End of game, white wins
+        case '0':
             move.endOfGame = true;
-            move.end = End::whiteWins;
+            move.end = (*(it + 2) == '1') ? End::blackWins : End::draw;
             break;
 
-        case '0':
-            //End of game, black wins
+        case '1':
             move.endOfGame = true;
-            move.end = End::blackWins;
+            move.end = End::whiteWins;
             break;
 
         case 'O':
@@ -149,6 +150,7 @@ void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std:
                     break;
                 default:
                     assert(0);
+                    break;
             }
             toColSet = true;
             continue; 
@@ -184,6 +186,7 @@ void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std:
                     break;
                 default:
                     assert(0);
+                    break;
             }
             toRowSet = true;
             continue;
@@ -207,12 +210,16 @@ void parseMoveWithPieceKnown(Move& move, std::string::const_iterator begin, std:
                 return;
             
             case '+':
-                move.check = true;
+                move.capture = true;
                 break;
 
             case '#':
                 move.checkmate = true;
                 move.check = true;
+                break;
+            default:
+                assert(0);
+                break;
         }
     }
     return;

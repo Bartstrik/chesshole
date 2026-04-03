@@ -1,8 +1,8 @@
 #include "render.hpp"
-#include <iostream>
 #include <memory>
 #include "assert.h"
 #include "common.hpp"
+#include "raylib.h"
 
 Rectangle RectangleFromCell(std::string cell) {
     assert(cell.size() == 2);
@@ -32,7 +32,7 @@ Rectangle RectangleFromCell(std::string cell) {
 
     //creating the rectangle type
     float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-    float y = static_cast<float>(7 - row) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
+    float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
     return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
@@ -42,7 +42,7 @@ Rectangle RectangleFromCell(const Column col, const Row row) {
 
     //creating the rectangle type
     float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-    float y = (7 - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
+    float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
     return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
@@ -91,6 +91,26 @@ void Window::updateWindow() {
     }
 
     texture = LoadTextureFromImage(board->boardImage);
+}
+
+void Window::endGame() {
+    switch (board->getGameEnd()) {
+        case PlayerColor::white:
+            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
+            break;
+
+        case PlayerColor::black:
+            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
+            break;
+
+        case PlayerColor::none:
+            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
+            break;
+
+        default:
+            assert(0);
+            break;
+    } 
 }
 
 void Window::setBoard(std::shared_ptr<Board> board) {

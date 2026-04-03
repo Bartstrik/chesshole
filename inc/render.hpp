@@ -24,6 +24,7 @@ class Window {
     void init();
     void drawWindow(); 
     void updateWindow(); //is called after board changes
+    void endGame();
     void setBoard(std::shared_ptr<Board> board);
 };
 

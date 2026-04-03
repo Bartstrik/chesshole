@@ -92,24 +92,28 @@ void Board::toggleTurn() {
   turn = (turn == PlayerColor::black) ? PlayerColor::white : PlayerColor::black;
 }
 
-void Board::endGame(const End& end) const {
+void Board::endGame(const End& end) {
   switch (end) {
   case End::whiteWins:
     std::cout << "White wins!" << std::endl;
+    gameEnd = PlayerColor::white;
     break;
 
   case End::blackWins:
     std::cout << "Black wins!" << std::endl;
+    gameEnd = PlayerColor::black;
     break;
 
   case End::draw:
     std::cout << "Draw!" << std::endl;
+    gameEnd = PlayerColor::none;
     break;
 
   default:
     std::cout << "Undefined end" << std::endl;
     break;
   }
+  gameDone = true;
 }
 
 void Board::transformPiece(const Square& square, const PieceName& pieceName) {
@@ -164,8 +168,8 @@ void Board::castle(const CastleSide& castleSide) {
     assert(cells[Column::H][row]->getName() == PieceName::rook);
     assert(cells[Column::H][row]->getPlayerColor() == turn);
 
-    cells[Column::F][row] = std::move(cells[Column::E][row]);
-    cells[Column::G][row] = std::move(cells[Column::H][row]);
+    movePiece({Column::E, row}, {Column::G, row});
+    movePiece({Column::H, row}, {Column::F, row});
   } else {
     assert(cells[Column::A][row] != nullptr);
     assert(cells[Column::A][row]->getName() == PieceName::rook);
@@ -177,8 +181,8 @@ void Board::castle(const CastleSide& castleSide) {
     assert(cells[Column::E][row]->getName() == PieceName::king);
     assert(cells[Column::E][row]->getPlayerColor() == turn);
 
-    cells[Column::C][row] = std::move(cells[Column::E][row]);
-    cells[Column::D][row] = std::move(cells[Column::A][row]);
+    movePiece({Column::E, row}, {Column::C, row});
+    movePiece({Column::A, row}, {Column::D, row});
   }
 }
 
@@ -200,7 +204,8 @@ Board::~Board() {}
 
 const std::string Board::getHistory() const { return history; }
 const PlayerColor Board::getTurn() const { return turn; }
-
+const bool Board::getGameDone() const { return gameDone; }
+const PlayerColor Board::getGameEnd() const { return gameEnd; }
 // should make this pick a random image from the pieces folder instead of
 // hardcoding it
 void Board::setPieces() {
@@ -912,8 +917,8 @@ void Board::doMove(const Move &move) {
 const bool Board::moveIsCheck(const Square& from, const Square& to) {
     std::unique_ptr<Piece> tempPiece{};
     if (cells[to.col][to.row] != nullptr) tempPiece = std::move(cells[to.col][to.row]);
-    cells[to.col][to.row] = std::move(cells[from.col][from.row]);
-
+    // cells[to.col][to.row] = std::move(cells[from.col][from.row]);
+    movePiece(from, to);
 
     Square king{};
     for (Column col = Column::A; col <= Column::H; ++col) {
@@ -924,7 +929,7 @@ const bool Board::moveIsCheck(const Square& from, const Square& to) {
             }
         }
     } 
-
+    assert (king.col != Column::none && king.row != Row::none);
 
     std::vector<Square> ret{};
     for (Column col = Column::A; col <= Column::H; ++col) {
@@ -963,14 +968,19 @@ const bool Board::moveIsCheck(const Square& from, const Square& to) {
             }
 
             for (auto& e : ret) {
-                if (e == king) return true;
+                if (e == king) {
+                    movePiece(to, from);
+                    if (tempPiece != nullptr) cells[to.col][to.row] = std::move(tempPiece);
+                    return true;
+                }
             }
             ret.clear();
         }
     }
 
 
-    cells[from.col][from.row] = std::move(cells[to.col][to.row]);
+    //cells[from.col][from.row] = std::move(cells[to.col][to.row]);
+    movePiece(to, from);
     if (tempPiece != nullptr) cells[to.col][to.row] = std::move(tempPiece);
     return false;
 }
