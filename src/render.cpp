@@ -3,6 +3,7 @@
 #include "assert.h"
 #include "common.hpp"
 #include "raylib.h"
+#include "lexer.hpp"
 
 Rectangle RectangleFromCell(std::string cell) {
     assert(cell.size() == 2);
@@ -56,42 +57,154 @@ Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cas
 Window::Window(const int screenWidth, const int screenHeight) {
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
-}
 
-Window::~Window() {
-    UnloadTexture(texture);       
-
-    CloseWindow();
-}
-
-void Window::init() {
     InitWindow(screenWidth, screenHeight, "Chesshole");
     SetTargetFPS(60); 
 }
 
-void Window::drawWindow() {
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-        
-        DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+Window::~Window() {
+    UnloadTexture(texture);       
+    CloseWindow();
+}
 
-    EndDrawing();
+void Window::initState(const gameState state) {
+    switch (state) {
+        case gameState::MainMenu:
+            initMainMenu();
+            break;
+
+        case gameState::Analysis:
+            initAnalysis();
+            break;
+
+        case gameState::PvP:
+            initPvP();
+            break;
+
+        case gameState::PvE:
+            initPvE();
+            break;
+
+        default:
+            assert(0);
+            break;
+    }
+}
+
+void Window::initMainMenu() {
+    state = gameState::MainMenu;
+    
+    for (int i = 0; i < STATES_AMOUNT - 1; i++) {
+        options[i].x = screenWidth * 0.1f;
+        options[i].y = i * screenHeight * 0.25f + screenHeight * 0.1f;
+
+        options[i].width = screenWidth * 0.8f;
+        options[i].height = screenHeight * 0.2f;
+    }
+}
+
+void Window::initAnalysis() {
+
+    state = gameState::Analysis;
+    board->setPieces();
+    
+    // converts the gameStr in individual strings
+    parseAN(gameStr, moveSetStr);  
+   
+    // converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a vector of individual moves
+    parseMoveSet(moveSetStr, moveSet);
+
+    moveSetIt = moveSet.begin();
+}
+
+void Window::initPvP() {
+    //state = gameState::PvP;
+}
+
+void Window::initPvE() {
+    //state = gameState::PvE;
 }
 
 void Window::updateWindow() {
-    //board->boardImage = board->originalBoardImage;
-    board->boardImage = ImageCopy(board->originalBoardImage);
-    for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
-        for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-            auto& piece = board->cells[col_iter][row_iter];
-            if (piece != nullptr) {
-                ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+    switch (state) {
+        case (gameState::MainMenu):
+            // checking if any of the options are pressed
+            for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
+                if (CheckCollisionPointRec(mousePoint, options[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    initState(static_cast<gameState>(i + 1));
+                }
             }
-        }
-    }
+            break;
 
-    texture = LoadTextureFromImage(board->boardImage);
+        case (gameState::Analysis):
+            if (moveSetIt != moveSet.end()) {
+                board->doMove(*moveSetIt);
+                moveSetIt++;
+            }
+
+            if (board->getGameDone()) {
+                endGame();
+                drawWindow();
+                while (1);
+            }
+
+            board->boardImage = ImageCopy(board->originalBoardImage);
+            for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
+                for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
+                    auto& piece = board->cells[col_iter][row_iter];
+                    if (piece != nullptr) {
+                        ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+                    }
+                }
+            }
+
+            texture = LoadTextureFromImage(board->boardImage);
+            break;
+
+        case (gameState::PvP):
+            break;
+
+        case (gameState::PvE):
+            break;
+
+        default:
+            assert(0);
+            break;
+    }
 }
+
+void Window::drawWindow() {
+    BeginDrawing();
+    switch (state) {
+        case (gameState::MainMenu):
+            ClearBackground(RAYWHITE);
+            DrawText("Main Menu", screenWidth * 0.4f, screenHeight * 0.9f, 20, BLACK);
+
+            // Draw Rectangles
+            for (int i = 0; i < STATES_AMOUNT - 1; i++) {
+                DrawRectangleRec(options[i], GRAY);
+            }
+
+            break;
+
+        case (gameState::Analysis):
+            ClearBackground(RAYWHITE);
+            DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+            break;
+
+        case (gameState::PvP):
+            break;
+
+        case (gameState::PvE):
+            break;
+
+        default:
+            assert(0);
+            break;
+    }
+    EndDrawing();
+}
+
 
 void Window::endGame() {
     switch (board->getGameEnd()) {
