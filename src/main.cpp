@@ -13,7 +13,7 @@ int main(void)
     auto board = std::make_shared<Board>(std::format("{}/img/board.png", PROJECT_ROOT_DIR));
     window.setBoard(board);
 
-    window.initMainMenu();
+    window.init(gameState::MainMenu);
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {

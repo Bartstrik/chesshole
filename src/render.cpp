@@ -67,14 +67,18 @@ Window::~Window() {
     CloseWindow();
 }
 
-void Window::initState(const gameState state) {
+void Window::init(const gameState state) {
     switch (state) {
         case gameState::MainMenu:
-            initMainMenu();
+            initMM();
             break;
 
+		case gameState::ANInput:
+			initANInput();
+			break;
+
         case gameState::Analysis:
-            initAnalysis();
+            initA();
             break;
 
         case gameState::PvP:
@@ -91,126 +95,26 @@ void Window::initState(const gameState state) {
     }
 }
 
-void Window::initMainMenu() {
-    state = gameState::MainMenu;
-    
-    for (int i = 0; i < STATES_AMOUNT - 1; i++) {
-        options[i].x = screenWidth * 0.1f;
-        options[i].y = i * screenHeight * 0.25f + screenHeight * 0.1f;
-
-        options[i].width = screenWidth * 0.8f;
-        options[i].height = screenHeight * 0.2f;
-    }
-}
-
-void Window::initAnalysis() {
-
-    state = gameState::Analysis;
-
-	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f, screenHeight * 0.4f};
-	text.reserve(MAX_INPUT_CHARS);
-	letterCount = text.size();
-
-	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f, screenHeight * 0.05f};
-}
-
-void Window::initPvP() {
-    //state = gameState::PvP;
-}
-
-void Window::initPvE() {
-    //state = gameState::PvE;
-}
-
 void Window::updateWindow() {
     switch (state) {
         case (gameState::MainMenu):
-            // checking if any of the options are pressed
-            for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
-                if (CheckCollisionPointRec(mousePoint, options[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    initState(static_cast<gameState>(i + 1));
-                }
-            }
+			updateWindowMM();
             break;
 
+		case gameState::ANInput:
+			updateWindowANInput();
+			break;
+
         case (gameState::Analysis):
-			if (!ANloaded) {
-				mouseOnText = CheckCollisionPointRec(GetMousePosition(), textBox);
-				if (mouseOnText) {
-					SetMouseCursor(MOUSE_CURSOR_IBEAM);
-					int key = GetKeyPressed();
-					
-					//CTRL+BACKSPACE
-					if (IsKeyPressed(KEY_BACKSPACE) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
-						letterCount = 0;
-						text.clear();
-						text.reserve(MAX_INPUT_CHARS);
-
-					//CTRL+V (paste clipboard)
-					} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
-						std::string clip = GetClipboardText();
-						if (clip.size() + letterCount <= MAX_INPUT_CHARS) {
-							text.append(clip.c_str());
-							letterCount += clip.size();
-						}
-
-					//backspace
-					} else if (IsKeyPressed(KEY_BACKSPACE)) {
-						if (letterCount > 0) {
-							letterCount--;
-							text.pop_back();
-						}
-
-					//normale case
-					} else {
-						//check for multiple keypresses
-						while (key > 0) {
-							if ((key >= 32) && (key <= 125) && (letterCount < MAX_INPUT_CHARS)) {
-								text.push_back(static_cast<char>(key));
-								letterCount++;
-							}
-							key = GetKeyPressed();
-						}
-					}
-
-				} else {
-					SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-				}
-
-                if (CheckCollisionPointRec(mousePoint, enterBox) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-					loadGame();
-					ANloaded = true;
-				}
-			} else {
-				if (moveSetIt != moveSet.end()) {
-					board->doMove(*moveSetIt);
-					moveSetIt++;
-				}
-
-				if (board->getGameDone()) {
-					endGame();
-					drawWindow();
-					while (1);
-				}
-
-				board->boardImage = ImageCopy(board->originalBoardImage);
-				for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
-					for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-						auto& piece = board->cells[col_iter][row_iter];
-						if (piece != nullptr) {
-							ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
-						}
-					}
-				}
-
-				texture = LoadTextureFromImage(board->boardImage);
-			}
+			updateWindowA();
             break;
 
         case (gameState::PvP):
+			updateWindowPvP();
             break;
 
         case (gameState::PvE):
+			updateWindowPvE();
             break;
 
         default:
@@ -223,45 +127,23 @@ void Window::drawWindow() {
     BeginDrawing();
     switch (state) {
         case (gameState::MainMenu):
-            ClearBackground(RAYWHITE);
-
-            // Draw Rectangles
-            for (int i = 0; i < STATES_AMOUNT - 1; i++) {
-                DrawRectangleRec(options[i], GRAY);
-            }
-
-            DrawText("Main Menu", screenWidth * 0.4f, screenHeight * 0.9f, 20, BLACK);
-			DrawText("Analysis", screenWidth * 0.4f, screenHeight * 0.175f, 20, BLACK);
-            DrawText("PvP", screenWidth * 0.45f, screenHeight * 0.425f, 20, BLACK);
-            DrawText("PvE", screenWidth * 0.45f, screenHeight * 0.675f, 20, BLACK);
-
+			drawWindowMM();
             break;
 
-        case (gameState::Analysis):
-            ClearBackground(RAYWHITE);
-			if (!ANloaded) {
-				DrawText("Please insert the game in algebraic notations below", screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
-				DrawRectangleRec(textBox, LIGHTGRAY);
-				if (mouseOnText) {
-					DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), RED);
-				} else {
-					DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), DARKGRAY);
-				}
-				DrawText(text.c_str(), static_cast<int>(textBox.x + 5), static_cast<int>(textBox.y + 8), 40, MAROON);
-				DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
+		case gameState::ANInput:
+			drawWindowANInput();
+			break;
 
-				//Enter button
-				DrawRectangleRec(enterBox, LIGHTGRAY);
-				DrawText("Enter", screenWidth * 0.75f, screenHeight * 0.75f, 20, DARKGRAY);
-			} else {
-            	DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
-			}
+        case (gameState::Analysis):
+			drawWindowA();
 			break;
 
         case (gameState::PvP):
+			drawWindowPvP();
             break;
 
         case (gameState::PvE):
+			drawWindowPvE();
             break;
 
         default:
@@ -271,6 +153,175 @@ void Window::drawWindow() {
     EndDrawing();
 }
 
+void Window::initMM() {
+    state = gameState::MainMenu;
+    
+    for (int i = 0; i < STATES_AMOUNT - 1; i++) {
+        options[i].x = screenWidth * 0.1f;
+        options[i].y = i * screenHeight * 0.25f + screenHeight * 0.1f;
+
+        options[i].width = screenWidth * 0.8f;
+        options[i].height = screenHeight * 0.2f;
+    }
+}
+
+void Window::initANInput() {
+	state = gameState::ANInput;
+
+	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f, screenHeight * 0.4f};
+	text.reserve(MAX_INPUT_CHARS);
+	letterCount = text.size();
+
+	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f, screenHeight * 0.05f};
+}
+
+void Window::initA() {
+    state = gameState::Analysis;
+}
+
+void Window::initPvP() {
+    //state = gameState::PvP;
+}
+
+void Window::initPvE() {
+    //state = gameState::PvE;
+}
+
+void Window::updateWindowMM() {
+	// checking if any of the options are pressed
+	for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
+		if (CheckCollisionPointRec(mousePoint, options[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+			init(static_cast<gameState>(i + 1));
+		}
+	}
+}
+
+void Window::updateWindowANInput() {
+	mouseOnText = CheckCollisionPointRec(GetMousePosition(), textBox);
+	if (mouseOnText) {
+		SetMouseCursor(MOUSE_CURSOR_IBEAM);
+		int key = GetKeyPressed();
+		
+		//CTRL+BACKSPACE
+		if (IsKeyPressed(KEY_BACKSPACE) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
+			letterCount = 0;
+			text.clear();
+			text.reserve(MAX_INPUT_CHARS);
+
+		//CTRL+V (paste clipboard)
+		} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
+			std::string clip = GetClipboardText();
+			if (clip.size() + letterCount <= MAX_INPUT_CHARS) {
+				text.append(clip.c_str());
+				letterCount += clip.size();
+			}
+
+		//backspace
+		} else if (IsKeyPressed(KEY_BACKSPACE)) {
+			if (letterCount > 0) {
+				letterCount--;
+				text.pop_back();
+			}
+
+		//normale case
+		} else {
+			//check for multiple keypresses
+			while (key > 0) {
+				if ((key >= 32) && (key <= 125) && (letterCount < MAX_INPUT_CHARS)) {
+					text.push_back(static_cast<char>(key));
+					letterCount++;
+				}
+				key = GetKeyPressed();
+			}
+		}
+
+	} else {
+		SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+	}
+
+	if (CheckCollisionPointRec(mousePoint, enterBox) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		loadGame();
+		state = gameState::Analysis;
+	}
+}
+
+void Window::updateWindowA() {
+	if (moveSetIt != moveSet.end()) {
+		board->doMove(*moveSetIt);
+		moveSetIt++;
+	}
+
+	if (board->getGameDone()) {
+		endGame();
+		drawWindow();
+		while (1);
+	}
+
+	board->boardImage = ImageCopy(board->originalBoardImage);
+	for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
+		for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
+			auto& piece = board->cells[col_iter][row_iter];
+			if (piece != nullptr) {
+				ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+			}
+		}
+	}
+
+	texture = LoadTextureFromImage(board->boardImage);
+}
+
+void Window::updateWindowPvP() {
+
+}
+
+void Window::updateWindowPvE() {
+
+}
+
+void Window::drawWindowMM() {
+	ClearBackground(RAYWHITE);
+
+	// Draw Rectangles
+	for (int i = 0; i < STATES_AMOUNT - 1; i++) {
+		DrawRectangleRec(options[i], GRAY);
+	}
+
+	DrawText("Main Menu", screenWidth * 0.4f, screenHeight * 0.9f, 20, BLACK);
+	DrawText("Analysis", screenWidth * 0.4f, screenHeight * 0.175f, 20, BLACK);
+	DrawText("PvP", screenWidth * 0.45f, screenHeight * 0.425f, 20, BLACK);
+	DrawText("PvE", screenWidth * 0.45f, screenHeight * 0.675f, 20, BLACK);
+}
+
+void Window::drawWindowANInput() {
+	ClearBackground(RAYWHITE);
+
+	DrawText("Please insert the game in algebraic notations below", screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
+	DrawRectangleRec(textBox, LIGHTGRAY);
+	if (mouseOnText) {
+		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), RED);
+	} else {
+		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), DARKGRAY);
+	}
+	DrawText(text.c_str(), static_cast<int>(textBox.x + 5), static_cast<int>(textBox.y + 8), 40, MAROON);
+	DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
+
+	//Enter button
+	DrawRectangleRec(enterBox, LIGHTGRAY);
+	DrawText("Enter", screenWidth * 0.75f, screenHeight * 0.75f, 20, DARKGRAY);
+}
+
+void Window::drawWindowA() {
+	ClearBackground(RAYWHITE);
+	DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+}
+
+void Window::drawWindowPvP() {
+
+}
+
+void Window::drawWindowPvE() {
+
+}
 
 void Window::endGame() {
     switch (board->getGameEnd()) {

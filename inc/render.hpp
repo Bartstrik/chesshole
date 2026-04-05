@@ -10,9 +10,10 @@
 
 enum class gameState : uint8_t {
     MainMenu,
-    Analysis,
+    ANInput,
     PvP,
     PvE,
+	Analysis,
 };
 
 class Window {
@@ -29,11 +30,31 @@ class Window {
 
 	int16_t letterCount = 0;
 	bool mouseOnText = false;
-	bool ANloaded = false;
 
     std::vector<std::string> moveSetStr{};
     std::vector<Move> moveSet{};
     std::vector<Move>::const_iterator moveSetIt;
+
+    void initMM();
+	void initANInput();
+    void initA();
+    void initPvP();
+    void initPvE();
+
+	void updateWindowMM();
+	void updateWindowANInput();
+	void updateWindowA();
+	void updateWindowPvP();
+	void updateWindowPvE();
+
+	void drawWindowMM();
+	void drawWindowANInput();
+	void drawWindowA();
+	void drawWindowPvP();
+	void drawWindowPvE();
+
+    void endGame();
+	void loadGame();
 
     public:
     std::shared_ptr<Board> board;
@@ -42,16 +63,10 @@ class Window {
     Window(const int screenWidth, const int screenHeight);
     ~Window();
 
-    void initState(const gameState state);
-    void initMainMenu();
-    void initAnalysis();
-    void initPvP();
-    void initPvE();
-    void updateWindow(); //is called after board changes
+    void init(const gameState state);
+    void updateWindow();
     void drawWindow();
-    void endGame();
     void setBoard(std::shared_ptr<Board> board);
-	void loadGame();
 };
 
 Rectangle RectangleFromCell(std::string& cell);
