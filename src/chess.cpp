@@ -296,8 +296,8 @@ const Square Board::findMove(const Move &move) {
   const Column colStart = (move.from.col == Column::none) ? Column::A : move.from.col;
   const Column colEnd = (move.from.col == Column::none) ? Column::H : move.from.col;
   
-  const Row rowStart = (move.from.row == Row::none) ? Row::_1 : Row::none;
-  const Row rowEnd = (move.from.row == Row::none) ? Row::_8 : Row::none;
+  const Row rowStart = (move.from.row == Row::none) ? Row::_1 : move.from.row;
+  const Row rowEnd = (move.from.row == Row::none) ? Row::_8 : move.from.row;
 
   //starting with known piecename case:
   switch (move.piece) {

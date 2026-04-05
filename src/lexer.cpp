@@ -2,7 +2,7 @@
 #include <cassert>
 
 
-void parseAN(const std::string& str, std::vector<std::string>& dest) {
+void parseAN(std::string& str, std::vector<std::string>& dest) {
     assert((dest.empty()));
     assert(!(str.empty()));
 
@@ -17,19 +17,20 @@ void parseAN(const std::string& str, std::vector<std::string>& dest) {
             continue;
         }
 
-        if (*it == ' ') {
-            if (valid) {
+        if (*it == ' ' || *it == '\r' || *it == '\n') {
+            if (valid && len != 0) {
                 dest.push_back(std::string(it - len, it));
             }
 
             valid = true;
             len = 0;
+			//while (((*it + 1) == ' ' || (*it + 1) == '\r' || (*it + 1) == '\n')) it++;
             continue;
         }
         len++;
     }
     //add last entry aswell.
-    dest.push_back(std::string(it - len, it));
+    if (len != 0) dest.push_back(std::string(it - len, it));
     return;
 }
 //A move can start with either a capital letter indicating the piece or with a lower case column indicating a pawn move. 

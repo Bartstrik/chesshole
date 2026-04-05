@@ -9,7 +9,7 @@
     1. f3 e5 2. g4 Qh4# -> {"f3", "e5", "g4", "Qh4#"}
 */
 
-void parseAN(const std::string& str, std::vector<std::string>& dest);
+void parseAN(std::string& str, std::vector<std::string>& dest);
 
 
 const Move parseMove(const std::string& str);
