@@ -177,6 +177,14 @@ void Window::initANInput() {
 
 void Window::initA() {
     state = gameState::Analysis;
+
+	loadGame();
+
+	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	stepBackRec = {screenWidth * 0.25f,  screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	pauseRec    = {screenWidth * 0.425f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	stepForRec  = {screenWidth * 0.6f,   screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	skipForRec  = {screenWidth * 0.775f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
 }
 
 void Window::initPvP() {
@@ -240,16 +248,38 @@ void Window::updateWindowANInput() {
 	}
 
 	if (CheckCollisionPointRec(mousePoint, enterBox) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		loadGame();
-		state = gameState::Analysis;
+		init(gameState::Analysis);
 	}
 }
 
 void Window::updateWindowA() {
-	if (moveSetIt != moveSet.end()) {
-		board->doMove(*moveSetIt);
-		moveSetIt++;
+	if (CheckCollisionPointRec(mousePoint, skipBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = true;	
 	}
+
+	if (CheckCollisionPointRec(mousePoint, stepBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = true;
+	}
+
+	if (CheckCollisionPointRec(mousePoint, pauseRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = !pause;	
+	}
+
+	if (CheckCollisionPointRec(mousePoint, stepForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = true;
+		if (moveSetIt != moveSet.end()) {
+			board->doMove(*moveSetIt);
+			moveSetIt++;
+		}
+	}
+
+	if (CheckCollisionPointRec(mousePoint, skipForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = true;
+			
+	}
+
+
+
 
 	if (board->getGameDone()) {
 		endGame();
@@ -313,6 +343,26 @@ void Window::drawWindowANInput() {
 void Window::drawWindowA() {
 	ClearBackground(RAYWHITE);
 	DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+
+	DrawRectangleRec(skipBackRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(skipBackRec.x), static_cast<int>(skipBackRec.y), static_cast<int>(skipBackRec.width), static_cast<int>(skipBackRec.height), DARKGRAY);
+	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth), static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20, BLACK);
+	
+	DrawRectangleRec(stepBackRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(stepBackRec.x), static_cast<int>(stepBackRec.y), static_cast<int>(stepBackRec.width), static_cast<int>(stepBackRec.height), DARKGRAY);
+	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth), static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20, BLACK);
+
+	DrawRectangleRec(pauseRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(pauseRec.x), static_cast<int>(pauseRec.y), static_cast<int>(pauseRec.width), static_cast<int>(pauseRec.height), DARKGRAY);
+	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth), static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
+
+	DrawRectangleRec(stepForRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(stepForRec.x), static_cast<int>(stepForRec.y), static_cast<int>(stepForRec.width), static_cast<int>(stepForRec.height), DARKGRAY);
+	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth), static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
+
+	DrawRectangleRec(skipForRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(skipForRec.x), static_cast<int>(skipForRec.y), static_cast<int>(skipForRec.width), static_cast<int>(skipForRec.height), DARKGRAY);
+	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth), static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
 }
 
 void Window::drawWindowPvP() {

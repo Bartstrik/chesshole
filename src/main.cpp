@@ -1,15 +1,12 @@
 #include <assert.h>
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "lexer.hpp"
 #include "render.hpp"
 #include "chess.hpp"
 
 int main(void)
 {
-    Window window(500, 500);
+    Window window(600, 600);
     auto board = std::make_shared<Board>(std::format("{}/img/board.png", PROJECT_ROOT_DIR));
     window.setBoard(board);
 

@@ -113,9 +113,9 @@ struct EnumArray {
     }
 };
 
+
 class Board {
     private:
-    std::string history{};
     PlayerColor turn = PlayerColor::white;
     bool whiteCanCastle = true;
     bool blackCanCastle = true;
@@ -148,7 +148,6 @@ class Board {
     Board(const std::string& boardImagePath);
     virtual ~Board();
 
-    const std::string getHistory() const;
     const PlayerColor getTurn() const;
     const bool getGameDone() const;
     const PlayerColor getGameEnd() const;

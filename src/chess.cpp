@@ -202,7 +202,6 @@ Board::Board(const std::string &boardImagePath) {
 
 Board::~Board() {}
 
-const std::string Board::getHistory() const { return history; }
 const PlayerColor Board::getTurn() const { return turn; }
 const bool Board::getGameDone() const { return gameDone; }
 const PlayerColor Board::getGameEnd() const { return gameEnd; }
