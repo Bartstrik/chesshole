@@ -1,7 +1,7 @@
 #include "lexer.hpp"
 #include <cassert>
 
-void parseAN(std::string &str, std::vector<std::string> &dest) {
+void parseAN(const std::string &str, std::vector<std::string> &dest) {
 	assert((dest.empty()));
 	assert(!(str.empty()));
 

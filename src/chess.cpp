@@ -1,3 +1,4 @@
+
 #include <format>
 #include <iostream>
 #include <memory>
@@ -7,7 +8,7 @@
 #include "cassert"
 #include "chess.hpp"
 #include "common.hpp"
-
+#include "lexer.hpp"
 // Piece Class
 Piece::Piece(const PieceName &name, const Column &col, const Row &row,
 			 const PlayerColor &player, const std::string &imagePath) {
@@ -212,9 +213,16 @@ Board::Board(const std::string &boardImagePath) {
 
 Board::~Board() {}
 
-const std::vector<std::array<Piece, 2>> Board::getHistory() const {
-	return history;
+const std::vector<Move> Board::getGame() const {
+	return game;
 }
+
+
+void Board::setGame(std::initializer_list<Move> iList ) {
+	game.assign(iList);
+	gameIt = game.begin();
+}
+
 const PlayerColor Board::getTurn() const { return turn; }
 const bool Board::getGameDone() const { return gameDone; }
 const PlayerColor Board::getGameEnd() const { return gameEnd; }
@@ -976,6 +984,9 @@ void Board::doMove(const Move &move) {
 	return;
 }
 
+void Board::undoMove(const Move &move) {
+
+}
 const bool Board::moveIsCheck(const Square &from, const Square &to) {
 	std::unique_ptr<Piece> tempPiece{};
 	if (cells[to.col][to.row] != nullptr)
@@ -1050,4 +1061,45 @@ const bool Board::moveIsCheck(const Square &from, const Square &to) {
 	if (tempPiece != nullptr)
 		cells[to.col][to.row] = std::move(tempPiece);
 	return false;
+}
+
+void Board::gameSkipBack() {
+	while(gameIt >= game.begin()) {
+		undoMove(*gameIt);
+		gameIt--;
+	}
+}
+
+void Board::gameStepBack() {
+	if (gameIt >= game.end()) {
+		undoMove(*gameIt);	
+		gameIt++;
+	}
+}
+
+void Board::gameStepFor() {
+	if (gameIt != game.end()) {
+		doMove(*gameIt);	
+		gameIt++;
+	}
+}
+
+void Board::gameSkipFor() {
+	while(gameIt != game.end()) {
+		doMove(*gameIt);
+		gameIt++;
+	}
+}
+
+void Board::loadGame(const std::string& text) {
+	setPieces();
+	
+	std::vector<std::string> moveSetStr{};
+	// converts the gameStr in individual strings
+	parseAN(text, moveSetStr);
+
+	// converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a
+	// vector of individual moves and load into game
+	parseMoveSet(moveSetStr, game);
+	gameIt = game.begin();
 }

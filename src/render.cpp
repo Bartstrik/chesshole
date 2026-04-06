@@ -182,7 +182,7 @@ void Window::initANInput() {
 void Window::initA() {
 	state = gameState::Analysis;
 
-	loadGame();
+	board->loadGame(text);
 
 	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f,
 				   screenWidth * 0.15f, screenHeight * 0.1f};
@@ -270,11 +270,13 @@ void Window::updateWindowA() {
 	if (CheckCollisionPointRec(mousePoint, skipBackRec) &&
 		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
+		board->gameSkipBack();
 	}
 
 	if (CheckCollisionPointRec(mousePoint, stepBackRec) &&
 		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
+		board->gameStepBack();
 	}
 
 	if (CheckCollisionPointRec(mousePoint, pauseRec) &&
@@ -285,15 +287,13 @@ void Window::updateWindowA() {
 	if (CheckCollisionPointRec(mousePoint, stepForRec) &&
 		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
-		if (moveSetIt != moveSet.end()) {
-			board->doMove(*moveSetIt);
-			moveSetIt++;
-		}
+		board->gameStepFor();
 	}
 
 	if (CheckCollisionPointRec(mousePoint, skipForRec) &&
 		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
+		board->gameSkipFor();
 	}
 
 	if (board->getGameDone()) {
@@ -441,15 +441,3 @@ void Window::endGame() {
 
 void Window::setBoard(std::shared_ptr<Board> board) { this->board = board; }
 
-void Window::loadGame() {
-	board->setPieces();
-
-	// converts the gameStr in individual strings
-	parseAN(text, moveSetStr);
-
-	// converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a
-	// vector of individual moves
-	parseMoveSet(moveSetStr, moveSet);
-
-	moveSetIt = moveSet.begin();
-}

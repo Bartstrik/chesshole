@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <utility>
@@ -115,7 +116,9 @@ template <typename T, std::size_t N> struct EnumArray {
 
 class Board {
   private:
-	std::vector<std::array<Piece, 2>> history{};
+	std::vector<Move> game{};
+	std::vector<Move>::const_iterator gameIt;
+
 	PlayerColor turn = PlayerColor::white;
 	bool whiteCanCastle = true;
 	bool blackCanCastle = true;
@@ -152,7 +155,8 @@ class Board {
 	Board(const std::string &boardImagePath);
 	virtual ~Board();
 
-	const std::vector<std::array<Piece, 2>> getHistory() const;
+	const std::vector<Move> getGame() const;
+	void setGame(std::initializer_list<Move> iList );
 	const PlayerColor getTurn() const;
 	const bool getGameDone() const;
 	const PlayerColor getGameEnd() const;
@@ -167,5 +171,14 @@ class Board {
 	// Using the Move type, current board position and the game rules, we try to
 	// determine the actual move itself.
 	void doMove(const Move &move);
+	void undoMove(const Move &move);
+
 	const bool moveIsCheck(const Square &from, const Square &to);
+
+	void gameSkipBack();
+	void gameStepBack();
+	void gameStepFor();
+	void gameSkipFor();
+
+	void loadGame(const std::string& text);
 };
