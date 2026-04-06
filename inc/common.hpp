@@ -78,6 +78,7 @@ struct Move {
 
 	PieceName piece;
 	PieceName promotionPiece;
+	PieceName capturePiece;
 
 	End end;
 	CastleSide castleSide;

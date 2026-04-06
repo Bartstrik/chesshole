@@ -296,27 +296,24 @@ void Window::updateWindowA() {
 		board->gameSkipFor();
 	}
 
-	if (board->getGameDone()) {
+	if (board->getGameEnd() != End::none) {
 		endGame();
-		drawWindow();
-		while (1)
-			;
-	}
-
-	board->boardImage = ImageCopy(board->originalBoardImage);
-	for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
-		for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-			auto &piece = board->cells[col_iter][row_iter];
-			if (piece != nullptr) {
-				ImageDraw(&board->boardImage, piece->getImage(),
-						  baseRectangleFromImage(piece->getImage()),
-						  RectangleFromCell(piece->getCol(), piece->getRow()),
-						  WHITE);
+	} else {
+		board->boardImage = ImageCopy(board->originalBoardImage);
+		for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
+			for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
+				auto &piece = board->cells[col_iter][row_iter];
+				if (piece != nullptr) {
+					ImageDraw(&board->boardImage, piece->getImage(),
+							  baseRectangleFromImage(piece->getImage()),
+							  RectangleFromCell(piece->getCol(), piece->getRow()),
+							  WHITE);
+				}
 			}
 		}
-	}
 
-	texture = LoadTextureFromImage(board->boardImage);
+		texture = LoadTextureFromImage(board->boardImage);
+	}
 }
 
 void Window::updateWindowPvP() {}
@@ -418,17 +415,17 @@ void Window::drawWindowPvE() {}
 
 void Window::endGame() {
 	switch (board->getGameEnd()) {
-	case PlayerColor::white:
+	case End::whiteWins:
 		texture = LoadTextureFromImage(LoadImage(
 			std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
 		break;
 
-	case PlayerColor::black:
+	case End::blackWins:
 		texture = LoadTextureFromImage(LoadImage(
 			std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
 		break;
 
-	case PlayerColor::none:
+	case End::draw:
 		texture = LoadTextureFromImage(LoadImage(
 			std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
 		break;

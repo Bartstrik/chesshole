@@ -3,8 +3,13 @@
 
 #include "chess.hpp"
 #include "render.hpp"
+#include "raylib.h"
+
 
 int main(void) {
+
+	SetTraceLogLevel(LOG_ERROR);
+
 	Window window(600, 600);
 	auto board = std::make_shared<Board>(
 		std::format("{}/img/board.png", PROJECT_ROOT_DIR));

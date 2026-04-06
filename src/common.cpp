@@ -115,7 +115,7 @@ std::ostream &operator<<(std::ostream &os, const Row &row) {
 		break;
 
 	case Row::_5:
-		os << "6";
+		os << "5";
 		break;
 
 	case Row::_6:

@@ -221,7 +221,7 @@ void parseMoveWithPieceKnown(Move &move, std::string::const_iterator begin,
 			return;
 
 		case '+':
-			move.capture = true;
+			move.check = true;
 			break;
 
 		case '#':

@@ -117,19 +117,19 @@ template <typename T, std::size_t N> struct EnumArray {
 class Board {
   private:
 	std::vector<Move> game{};
-	std::vector<Move>::const_iterator gameIt;
+	std::vector<Move>::iterator gameIt;
 
 	PlayerColor turn = PlayerColor::white;
 	bool whiteCanCastle = true;
 	bool blackCanCastle = true;
 	bool check = false;
-	bool gameDone = false;
-	PlayerColor gameEnd = PlayerColor::none;
+	End gameEnd = End::none;
 
 	void toggleTurn();
 	void endGame(const End &end);
 	void transformPiece(const Square &square, const PieceName &pieceName);
 	void castle(const CastleSide &castleSide);
+	void unCastle(const CastleSide &castleSide);
 	void drawOffer() const;
 	void removePiece(const Square &square);
 	const Square findMove(const Move &move);
@@ -158,8 +158,7 @@ class Board {
 	const std::vector<Move> getGame() const;
 	void setGame(std::initializer_list<Move> iList );
 	const PlayerColor getTurn() const;
-	const bool getGameDone() const;
-	const PlayerColor getGameEnd() const;
+	const End getGameEnd() const;
 	void setPieces();
 	void movePiece(const Square &from, const Square &to);
 
@@ -170,7 +169,7 @@ class Board {
 	void getMoves(const Column &col, const Row &row, std::vector<Square> &to);
 	// Using the Move type, current board position and the game rules, we try to
 	// determine the actual move itself.
-	void doMove(const Move &move);
+	void doMove(Move &move);
 	void undoMove(const Move &move);
 
 	const bool moveIsCheck(const Square &from, const Square &to);

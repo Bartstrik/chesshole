@@ -98,27 +98,28 @@ void Board::toggleTurn() {
 }
 
 void Board::endGame(const End &end) {
+	gameEnd = end;
 	switch (end) {
 	case End::whiteWins:
 		std::cout << "White wins!" << std::endl;
-		gameEnd = PlayerColor::white;
 		break;
 
 	case End::blackWins:
 		std::cout << "Black wins!" << std::endl;
-		gameEnd = PlayerColor::black;
 		break;
 
 	case End::draw:
 		std::cout << "Draw!" << std::endl;
-		gameEnd = PlayerColor::none;
 		break;
+
+	//Used for stepping back
+	case End::none:
+		std::cout << "Game unEnded ?!" << std::endl;
 
 	default:
 		std::cout << "Undefined end" << std::endl;
 		break;
 	}
-	gameDone = true;
 }
 
 void Board::transformPiece(const Square &square, const PieceName &pieceName) {
@@ -140,16 +141,21 @@ void Board::transformPiece(const Square &square, const PieceName &pieceName) {
 	case PieceName::rook:
 		cells[square.col][square.row] = std::make_unique<Rook>(
 			square.col, square.row, turn,
-			std::format("{}/img/{}/rook.png", PROJECT_ROOT_DIR,
+			std::format("{}/img/{}/rook1.png", PROJECT_ROOT_DIR,
 						playerColorCStr(turn)));
 		break;
 
 	case PieceName::queen:
 		cells[square.col][square.row] = std::make_unique<Queen>(
 			square.col, square.row, turn,
-			std::format("{}/img/{}/queen.png", PROJECT_ROOT_DIR,
+			std::format("{}/img/{}/queen1.png", PROJECT_ROOT_DIR,
 						playerColorCStr(turn)));
 		break;
+
+	case PieceName::pawn:
+		cells[square.col][square.row] = std::make_unique<Pawn>(square.col, square.row, turn, std::format("{}/img/{}/pawn1.png", PROJECT_ROOT_DIR, playerColorCStr(turn)));
+		break;
+
 	default:
 		assert(0);
 	}
@@ -158,13 +164,15 @@ void Board::transformPiece(const Square &square, const PieceName &pieceName) {
 void Board::castle(const CastleSide &castleSide) {
 	assert(castleSide == CastleSide::kingSide ||
 		   castleSide == CastleSide::queenSide);
-	Row row;
+
+	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
+
 	if (turn == PlayerColor::white) {
 		assert(whiteCanCastle);
-		row = Row::_1;
+		whiteCanCastle = false;
 	} else {
 		assert(blackCanCastle);
-		row = Row::_8;
+		blackCanCastle = false;
 	}
 
 	if (castleSide == CastleSide::kingSide) {
@@ -183,7 +191,7 @@ void Board::castle(const CastleSide &castleSide) {
 		assert(cells[Column::A][row] != nullptr);
 		assert(cells[Column::A][row]->getName() == PieceName::rook);
 		assert(cells[Column::A][row]->getPlayerColor() == turn);
-		assert(cells[Column::C][row] == nullptr);
+		assert(cells[Column::B][row] == nullptr);
 		assert(cells[Column::C][row] == nullptr);
 		assert(cells[Column::D][row] == nullptr);
 		assert(cells[Column::E][row] != nullptr);
@@ -192,6 +200,46 @@ void Board::castle(const CastleSide &castleSide) {
 
 		movePiece({Column::E, row}, {Column::C, row});
 		movePiece({Column::A, row}, {Column::D, row});
+	}
+}
+
+void Board::unCastle(const CastleSide &castleSide) {
+	assert(castleSide == CastleSide::kingSide ||
+		   castleSide == CastleSide::queenSide);
+
+	if (turn == PlayerColor::white) {
+		whiteCanCastle = true;
+	} else {
+		blackCanCastle = true;
+	}
+
+	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
+
+	if (castleSide == CastleSide::kingSide) {
+		assert(cells[Column::E][row] == nullptr);
+		assert(cells[Column::F][row] != nullptr);
+		assert(cells[Column::F][row]->getName() == PieceName::rook);
+		assert(cells[Column::F][row]->getPlayerColor() == turn);
+		assert(cells[Column::G][row] != nullptr);
+		assert(cells[Column::G][row]->getName() == PieceName::king);
+		assert(cells[Column::G][row]->getPlayerColor() == turn);
+		assert(cells[Column::H][row] == nullptr);
+
+		movePiece({Column::G, row}, {Column::E, row});
+		movePiece({Column::F, row}, {Column::H, row});
+	} else {
+		assert(cells[Column::A][row] == nullptr);
+		assert(cells[Column::B][row] == nullptr);
+		assert(cells[Column::C][row] != nullptr);
+		assert(cells[Column::C][row]->getName() == PieceName::king);
+		assert(cells[Column::C][row]->getPlayerColor() == turn);
+		assert(cells[Column::D][row] != nullptr);
+		assert(cells[Column::D][row]->getName() == PieceName::rook);
+		assert(cells[Column::D][row]->getPlayerColor() == turn);
+		assert(cells[Column::E][row] == nullptr);
+
+		movePiece({Column::C, row}, {Column::E, row});
+		movePiece({Column::D, row}, {Column::A, row});
 	}
 }
 
@@ -224,8 +272,7 @@ void Board::setGame(std::initializer_list<Move> iList ) {
 }
 
 const PlayerColor Board::getTurn() const { return turn; }
-const bool Board::getGameDone() const { return gameDone; }
-const PlayerColor Board::getGameEnd() const { return gameEnd; }
+const End Board::getGameEnd() const { return gameEnd; }
 // should make this pick a random image from the pieces folder instead of
 // hardcoding it
 void Board::setPieces() {
@@ -917,12 +964,17 @@ void Board::getKingMoves(const std::unique_ptr<Piece> &piece,
 	}
 }
 
-void Board::doMove(const Move &move) {
+void Board::doMove(Move &move) {
 	std::cout << "Attempting to do move : piece = " << move.piece;
 	std::cout << ", From col = " << move.from.col
 			  << ", row = " << move.from.row;
 	std::cout << ", To col = " << move.to.col << ", row = " << move.to.row
 			  << std::endl;
+
+	if (move.capture) {
+		move.capturePiece = cells[move.to.col][move.to.row]->getName();
+	}
+	
 	// if the from square is given, the to square is also always given. else
 	// they should be defined as none
 	if (move.from.col >= Column::A && move.from.col <= Column::H &&
@@ -933,28 +985,23 @@ void Board::doMove(const Move &move) {
 	}
 
 	if (move.enPassant) {
-		Square from, to = {};
-		from.col = move.from.col;
-		from.row = (move.to.row == Row::_3) ? Row::_4 : Row::_5;
+		move.from.col = move.from.col;
+		move.from.row = (move.to.row == Row::_3) ? Row::_4 : Row::_5;
 
-		to.col = move.to.col;
-		to.row = move.to.row;
-
-		removePiece(Square{to.col, from.row});
-		movePiece(from, to);
+		removePiece(Square{move.to.col, move.from.row});
+		movePiece(move.from, move.to);
 		toggleTurn();
 		return;
 	}
 
+	//missing case where promotion is combined with capture
 	if (move.promotion) {
 		assert(move.promotionPiece != PieceName::none);
 		transformPiece(move.from, move.promotionPiece);
 
-		Square from, to = {};
-		from.col = move.to.col;
-		from.row = (move.to.row == Row::_1) ? Row::_2 : Row::_7;
-		to = move.to;
-		movePiece(from, to);
+		move.from.col = move.to.col;
+		move.from.row = (move.to.row == Row::_1) ? Row::_2 : Row::_7;
+		movePiece(move.from, move.to);
 		toggleTurn();
 		return;
 	}
@@ -977,15 +1024,74 @@ void Board::doMove(const Move &move) {
 		return;
 	}
 
+
 	// base case
-	const Square from = findMove(move);
-	movePiece(from, move.to);
+	move.from = findMove(move);
+	movePiece(move.from, move.to);
 	toggleTurn();
 	return;
 }
 
 void Board::undoMove(const Move &move) {
+	std::cout << "Attempting to undo move : piece = " << move.piece;
+	std::cout << ", From col = " << move.from.col
+			  << ", row = " << move.from.row;
+	std::cout << ", To col = " << move.to.col << ", row = " << move.to.row
+			  << std::endl;
+	// if the from square is given, the to square is also always given. else
+	// they should be defined as none
+	if (move.from.col >= Column::A && move.from.col <= Column::H &&
+		move.from.row >= Row::_1 && move.from.row <= Row::_8) {
+		movePiece(move.to , move.from);
+		if (move.capture) transformPiece(move.to, move.capturePiece);
+		toggleTurn();
+		return;
+	}
 
+	if (move.enPassant) {
+		
+		transformPiece(Square{move.to.col, move.from.row}, PieceName::pawn);
+		movePiece(move.to , move.from);
+		if (move.capture) transformPiece(move.to, move.capturePiece);
+		toggleTurn();
+		return;
+	}
+
+	//missing case where promotion is combined with capture
+	if (move.promotion) {
+		assert(move.promotionPiece != PieceName::none);
+		transformPiece(move.to, PieceName::pawn);
+
+		movePiece(move.to, move.from);
+		if (move.capture) transformPiece(move.to, move.capturePiece);
+		toggleTurn();
+		return;
+	}
+
+	//TODO Uncastle
+	if (move.castle) {
+		assert(move.castleSide != CastleSide::none);
+		toggleTurn();
+		unCastle(move.castleSide);
+		return;
+	}
+
+	if (move.endOfGame) {
+		assert(move.end != End::none);
+		endGame(End::none);
+		return;
+	}
+
+	if (move.drawOffer) {
+		drawOffer();
+		return;
+	}
+
+	// base case
+	movePiece(move.to, move.from);
+	if (move.capture) transformPiece(move.to, move.capturePiece);
+	toggleTurn();
+	return;
 }
 const bool Board::moveIsCheck(const Square &from, const Square &to) {
 	std::unique_ptr<Piece> tempPiece{};
@@ -1064,16 +1170,16 @@ const bool Board::moveIsCheck(const Square &from, const Square &to) {
 }
 
 void Board::gameSkipBack() {
-	while(gameIt >= game.begin()) {
-		undoMove(*gameIt);
+	while(gameIt != game.begin()) {
 		gameIt--;
+		undoMove(*gameIt);
 	}
 }
 
 void Board::gameStepBack() {
-	if (gameIt >= game.end()) {
+	if (gameIt != game.begin()) {
+		gameIt--;
 		undoMove(*gameIt);	
-		gameIt++;
 	}
 }
 
