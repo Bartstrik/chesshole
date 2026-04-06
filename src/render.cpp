@@ -1,204 +1,214 @@
 #include "render.hpp"
-#include <memory>
 #include "assert.h"
 #include "common.hpp"
-#include "raylib.h"
 #include "lexer.hpp"
+#include "raylib.h"
+#include <memory>
 
 Rectangle RectangleFromCell(std::string cell) {
-    assert(cell.size() == 2);
+	assert(cell.size() == 2);
 
-    uint8_t row, col;
-    std::string validCols = "abcdefgh";
-    std::string validRows = "12345678";
-    bool correctCol = false;
-    bool correctRow = false;
+	uint8_t row, col;
+	std::string validCols = "abcdefgh";
+	std::string validRows = "12345678";
+	bool correctCol = false;
+	bool correctRow = false;
 
-    cell[0] = tolower(cell[0]);
-    for(uint8_t i = 0; i < validCols.size(); i++) {
-        if (cell[0] == validCols[i]) {
-            correctCol = true;
-            col = i;
-        }
-    }
-    assert(correctCol);
+	cell[0] = tolower(cell[0]);
+	for (uint8_t i = 0; i < validCols.size(); i++) {
+		if (cell[0] == validCols[i]) {
+			correctCol = true;
+			col = i;
+		}
+	}
+	assert(correctCol);
 
-    for(uint8_t i = 0; i < validRows.size(); i++) {
-        if (cell[1] == validRows[i]) {
-            correctRow = true;
-            row = i;
-        }
-    }
-    assert(correctRow);
+	for (uint8_t i = 0; i < validRows.size(); i++) {
+		if (cell[1] == validRows[i]) {
+			correctRow = true;
+			row = i;
+		}
+	}
+	assert(correctRow);
 
-    //creating the rectangle type
-    float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-    float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
-    return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
+	// creating the rectangle type
+	float x =
+		static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
+	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y +
+			  BOARD_PADDING_Y;
+	return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
 Rectangle RectangleFromCell(const Column col, const Row row) {
-    assert(col >= Column::A && col <= Column::H);
-    assert(row >= Row::_1 && row <= Row::_8);
+	assert(col >= Column::A && col <= Column::H);
+	assert(row >= Row::_1 && row <= Row::_8);
 
-    //creating the rectangle type
-    float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-    float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
-    return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
+	// creating the rectangle type
+	float x =
+		static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
+	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y +
+			  BOARD_PADDING_Y;
+	return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
-Rectangle baseRectangleFromImage(Image image) {return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height) };}
-
-
-
-
-
+Rectangle baseRectangleFromImage(Image image) {
+	return Rectangle{0, 0, static_cast<float>(image.width),
+					 static_cast<float>(image.height)};
+}
 
 Window::Window(const int screenWidth, const int screenHeight) {
-    this->screenWidth = screenWidth;
-    this->screenHeight = screenHeight;
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
 
-    InitWindow(screenWidth, screenHeight, "Chesshole");
-    SetTargetFPS(60); 
+	InitWindow(screenWidth, screenHeight, "Chesshole");
+	SetTargetFPS(60);
 }
 
 Window::~Window() {
-    UnloadTexture(texture);       
-    CloseWindow();
+	UnloadTexture(texture);
+	CloseWindow();
 }
 
 void Window::init(const gameState state) {
-    switch (state) {
-        case gameState::MainMenu:
-            initMM();
-            break;
+	switch (state) {
+	case gameState::MainMenu:
+		initMM();
+		break;
 
-		case gameState::ANInput:
-			initANInput();
-			break;
+	case gameState::ANInput:
+		initANInput();
+		break;
 
-        case gameState::Analysis:
-            initA();
-            break;
+	case gameState::Analysis:
+		initA();
+		break;
 
-        case gameState::PvP:
-            initPvP();
-            break;
+	case gameState::PvP:
+		initPvP();
+		break;
 
-        case gameState::PvE:
-            initPvE();
-            break;
+	case gameState::PvE:
+		initPvE();
+		break;
 
-        default:
-            assert(0);
-            break;
-    }
+	default:
+		assert(0);
+		break;
+	}
 }
 
 void Window::updateWindow() {
-    switch (state) {
-        case (gameState::MainMenu):
-			updateWindowMM();
-            break;
+	switch (state) {
+	case (gameState::MainMenu):
+		updateWindowMM();
+		break;
 
-		case gameState::ANInput:
-			updateWindowANInput();
-			break;
+	case gameState::ANInput:
+		updateWindowANInput();
+		break;
 
-        case (gameState::Analysis):
-			updateWindowA();
-            break;
+	case (gameState::Analysis):
+		updateWindowA();
+		break;
 
-        case (gameState::PvP):
-			updateWindowPvP();
-            break;
+	case (gameState::PvP):
+		updateWindowPvP();
+		break;
 
-        case (gameState::PvE):
-			updateWindowPvE();
-            break;
+	case (gameState::PvE):
+		updateWindowPvE();
+		break;
 
-        default:
-            assert(0);
-            break;
-    }
+	default:
+		assert(0);
+		break;
+	}
 }
 
 void Window::drawWindow() {
-    BeginDrawing();
-    switch (state) {
-        case (gameState::MainMenu):
-			drawWindowMM();
-            break;
+	BeginDrawing();
+	switch (state) {
+	case (gameState::MainMenu):
+		drawWindowMM();
+		break;
 
-		case gameState::ANInput:
-			drawWindowANInput();
-			break;
+	case gameState::ANInput:
+		drawWindowANInput();
+		break;
 
-        case (gameState::Analysis):
-			drawWindowA();
-			break;
+	case (gameState::Analysis):
+		drawWindowA();
+		break;
 
-        case (gameState::PvP):
-			drawWindowPvP();
-            break;
+	case (gameState::PvP):
+		drawWindowPvP();
+		break;
 
-        case (gameState::PvE):
-			drawWindowPvE();
-            break;
+	case (gameState::PvE):
+		drawWindowPvE();
+		break;
 
-        default:
-            assert(0);
-            break;
-    }
-    EndDrawing();
+	default:
+		assert(0);
+		break;
+	}
+	EndDrawing();
 }
 
 void Window::initMM() {
-    state = gameState::MainMenu;
-    
-    for (int i = 0; i < STATES_AMOUNT - 1; i++) {
-        options[i].x = screenWidth * 0.1f;
-        options[i].y = i * screenHeight * 0.25f + screenHeight * 0.1f;
+	state = gameState::MainMenu;
 
-        options[i].width = screenWidth * 0.8f;
-        options[i].height = screenHeight * 0.2f;
-    }
+	for (int i = 0; i < STATES_AMOUNT - 1; i++) {
+		options[i].x = screenWidth * 0.1f;
+		options[i].y = i * screenHeight * 0.25f + screenHeight * 0.1f;
+
+		options[i].width = screenWidth * 0.8f;
+		options[i].height = screenHeight * 0.2f;
+	}
 }
 
 void Window::initANInput() {
 	state = gameState::ANInput;
 
-	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f, screenHeight * 0.4f};
+	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f,
+			   screenHeight * 0.4f};
 	text.reserve(MAX_INPUT_CHARS);
 	letterCount = text.size();
 
-	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f, screenHeight * 0.05f};
+	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f,
+				screenHeight * 0.05f};
 }
 
 void Window::initA() {
-    state = gameState::Analysis;
+	state = gameState::Analysis;
 
 	loadGame();
 
-	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
-	stepBackRec = {screenWidth * 0.25f,  screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
-	pauseRec    = {screenWidth * 0.425f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
-	stepForRec  = {screenWidth * 0.6f,   screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
-	skipForRec  = {screenWidth * 0.775f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f,
+				   screenWidth * 0.15f, screenHeight * 0.1f};
+	stepBackRec = {screenWidth * 0.25f, screenHeight * 0.85f,
+				   screenWidth * 0.15f, screenHeight * 0.1f};
+	pauseRec = {screenWidth * 0.425f, screenHeight * 0.85f, screenWidth * 0.15f,
+				screenHeight * 0.1f};
+	stepForRec = {screenWidth * 0.6f, screenHeight * 0.85f, screenWidth * 0.15f,
+				  screenHeight * 0.1f};
+	skipForRec = {screenWidth * 0.775f, screenHeight * 0.85f,
+				  screenWidth * 0.15f, screenHeight * 0.1f};
 }
 
 void Window::initPvP() {
-    //state = gameState::PvP;
+	// state = gameState::PvP;
 }
 
 void Window::initPvE() {
-    //state = gameState::PvE;
+	// state = gameState::PvE;
 }
 
 void Window::updateWindowMM() {
 	// checking if any of the options are pressed
 	for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
-		if (CheckCollisionPointRec(mousePoint, options[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		if (CheckCollisionPointRec(mousePoint, options[i]) &&
+			IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			init(static_cast<gameState>(i + 1));
 		}
 	}
@@ -209,33 +219,36 @@ void Window::updateWindowANInput() {
 	if (mouseOnText) {
 		SetMouseCursor(MOUSE_CURSOR_IBEAM);
 		int key = GetKeyPressed();
-		
-		//CTRL+BACKSPACE
-		if (IsKeyPressed(KEY_BACKSPACE) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
+
+		// CTRL+BACKSPACE
+		if (IsKeyPressed(KEY_BACKSPACE) &&
+			(IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
 			letterCount = 0;
 			text.clear();
 			text.reserve(MAX_INPUT_CHARS);
 
-		//CTRL+V (paste clipboard)
-		} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
+			// CTRL+V (paste clipboard)
+		} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) ||
+										   IsKeyDown(KEY_RIGHT_CONTROL))) {
 			std::string clip = GetClipboardText();
 			if (clip.size() + letterCount <= MAX_INPUT_CHARS) {
 				text.append(clip.c_str());
 				letterCount += clip.size();
 			}
 
-		//backspace
+			// backspace
 		} else if (IsKeyPressed(KEY_BACKSPACE)) {
 			if (letterCount > 0) {
 				letterCount--;
 				text.pop_back();
 			}
 
-		//normale case
+			// normale case
 		} else {
-			//check for multiple keypresses
+			// check for multiple keypresses
 			while (key > 0) {
-				if ((key >= 32) && (key <= 125) && (letterCount < MAX_INPUT_CHARS)) {
+				if ((key >= 32) && (key <= 125) &&
+					(letterCount < MAX_INPUT_CHARS)) {
 					text.push_back(static_cast<char>(key));
 					letterCount++;
 				}
@@ -247,25 +260,30 @@ void Window::updateWindowANInput() {
 		SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 	}
 
-	if (CheckCollisionPointRec(mousePoint, enterBox) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+	if (CheckCollisionPointRec(mousePoint, enterBox) &&
+		IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		init(gameState::Analysis);
 	}
 }
 
 void Window::updateWindowA() {
-	if (CheckCollisionPointRec(mousePoint, skipBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-		pause = true;	
-	}
-
-	if (CheckCollisionPointRec(mousePoint, stepBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, skipBackRec) &&
+		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 	}
 
-	if (CheckCollisionPointRec(mousePoint, pauseRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-		pause = !pause;	
+	if (CheckCollisionPointRec(mousePoint, stepBackRec) &&
+		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = true;
 	}
 
-	if (CheckCollisionPointRec(mousePoint, stepForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, pauseRec) &&
+		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+		pause = !pause;
+	}
+
+	if (CheckCollisionPointRec(mousePoint, stepForRec) &&
+		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 		if (moveSetIt != moveSet.end()) {
 			board->doMove(*moveSetIt);
@@ -273,26 +291,27 @@ void Window::updateWindowA() {
 		}
 	}
 
-	if (CheckCollisionPointRec(mousePoint, skipForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, skipForRec) &&
+		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
-			
 	}
-
-
-
 
 	if (board->getGameDone()) {
 		endGame();
 		drawWindow();
-		while (1);
+		while (1)
+			;
 	}
 
 	board->boardImage = ImageCopy(board->originalBoardImage);
 	for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
 		for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-			auto& piece = board->cells[col_iter][row_iter];
+			auto &piece = board->cells[col_iter][row_iter];
 			if (piece != nullptr) {
-				ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()), RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
+				ImageDraw(&board->boardImage, piece->getImage(),
+						  baseRectangleFromImage(piece->getImage()),
+						  RectangleFromCell(piece->getCol(), piece->getRow()),
+						  WHITE);
 			}
 		}
 	}
@@ -300,13 +319,9 @@ void Window::updateWindowA() {
 	texture = LoadTextureFromImage(board->boardImage);
 }
 
-void Window::updateWindowPvP() {
+void Window::updateWindowPvP() {}
 
-}
-
-void Window::updateWindowPvE() {
-
-}
+void Window::updateWindowPvE() {}
 
 void Window::drawWindowMM() {
 	ClearBackground(RAYWHITE);
@@ -325,86 +340,116 @@ void Window::drawWindowMM() {
 void Window::drawWindowANInput() {
 	ClearBackground(RAYWHITE);
 
-	DrawText("Please insert the game in algebraic notations below", screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
+	DrawText("Please insert the game in algebraic notations below",
+			 screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
 	DrawRectangleRec(textBox, LIGHTGRAY);
 	if (mouseOnText) {
-		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), RED);
+		DrawRectangleLines(static_cast<int>(textBox.x),
+						   static_cast<int>(textBox.y),
+						   static_cast<int>(textBox.width),
+						   static_cast<int>(textBox.height), RED);
 	} else {
-		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width), static_cast<int>(textBox.height), DARKGRAY);
+		DrawRectangleLines(static_cast<int>(textBox.x),
+						   static_cast<int>(textBox.y),
+						   static_cast<int>(textBox.width),
+						   static_cast<int>(textBox.height), DARKGRAY);
 	}
-	DrawText(text.c_str(), static_cast<int>(textBox.x + 5), static_cast<int>(textBox.y + 8), 40, MAROON);
-	DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
+	DrawText(text.c_str(), static_cast<int>(textBox.x + 5),
+			 static_cast<int>(textBox.y + 8), 40, MAROON);
+	DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS),
+			 screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
 
-	//Enter button
+	// Enter button
 	DrawRectangleRec(enterBox, LIGHTGRAY);
 	DrawText("Enter", screenWidth * 0.75f, screenHeight * 0.75f, 20, DARKGRAY);
 }
 
 void Window::drawWindowA() {
 	ClearBackground(RAYWHITE);
-	DrawTexture(texture, screenWidth/2 - texture.width/2, screenHeight/2 - texture.height/2, WHITE);
+	DrawTexture(texture, screenWidth / 2 - texture.width / 2,
+				screenHeight / 2 - texture.height / 2, WHITE);
 
 	DrawRectangleRec(skipBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipBackRec.x), static_cast<int>(skipBackRec.y), static_cast<int>(skipBackRec.width), static_cast<int>(skipBackRec.height), DARKGRAY);
-	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth), static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20, BLACK);
-	
+	DrawRectangleLines(static_cast<int>(skipBackRec.x),
+					   static_cast<int>(skipBackRec.y),
+					   static_cast<int>(skipBackRec.width),
+					   static_cast<int>(skipBackRec.height), DARKGRAY);
+	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth),
+			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
+
 	DrawRectangleRec(stepBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepBackRec.x), static_cast<int>(stepBackRec.y), static_cast<int>(stepBackRec.width), static_cast<int>(stepBackRec.height), DARKGRAY);
-	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth), static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawRectangleLines(static_cast<int>(stepBackRec.x),
+					   static_cast<int>(stepBackRec.y),
+					   static_cast<int>(stepBackRec.width),
+					   static_cast<int>(stepBackRec.height), DARKGRAY);
+	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth),
+			 static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
 
 	DrawRectangleRec(pauseRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(pauseRec.x), static_cast<int>(pauseRec.y), static_cast<int>(pauseRec.width), static_cast<int>(pauseRec.height), DARKGRAY);
-	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth), static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawRectangleLines(static_cast<int>(pauseRec.x),
+					   static_cast<int>(pauseRec.y),
+					   static_cast<int>(pauseRec.width),
+					   static_cast<int>(pauseRec.height), DARKGRAY);
+	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth),
+			 static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
 
 	DrawRectangleRec(stepForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepForRec.x), static_cast<int>(stepForRec.y), static_cast<int>(stepForRec.width), static_cast<int>(stepForRec.height), DARKGRAY);
-	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth), static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawRectangleLines(static_cast<int>(stepForRec.x),
+					   static_cast<int>(stepForRec.y),
+					   static_cast<int>(stepForRec.width),
+					   static_cast<int>(stepForRec.height), DARKGRAY);
+	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth),
+			 static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
 
 	DrawRectangleRec(skipForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipForRec.x), static_cast<int>(skipForRec.y), static_cast<int>(skipForRec.width), static_cast<int>(skipForRec.height), DARKGRAY);
-	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth), static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawRectangleLines(static_cast<int>(skipForRec.x),
+					   static_cast<int>(skipForRec.y),
+					   static_cast<int>(skipForRec.width),
+					   static_cast<int>(skipForRec.height), DARKGRAY);
+	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth),
+			 static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
 }
 
-void Window::drawWindowPvP() {
+void Window::drawWindowPvP() {}
 
-}
-
-void Window::drawWindowPvE() {
-
-}
+void Window::drawWindowPvE() {}
 
 void Window::endGame() {
-    switch (board->getGameEnd()) {
-        case PlayerColor::white:
-            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
-            break;
+	switch (board->getGameEnd()) {
+	case PlayerColor::white:
+		texture = LoadTextureFromImage(LoadImage(
+			std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
+		break;
 
-        case PlayerColor::black:
-            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
-            break;
+	case PlayerColor::black:
+		texture = LoadTextureFromImage(LoadImage(
+			std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
+		break;
 
-        case PlayerColor::none:
-            texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
-            break;
+	case PlayerColor::none:
+		texture = LoadTextureFromImage(LoadImage(
+			std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
+		break;
 
-        default:
-            assert(0);
-            break;
-    } 
+	default:
+		assert(0);
+		break;
+	}
 }
 
-void Window::setBoard(std::shared_ptr<Board> board) {
-    this->board = board;
-}
+void Window::setBoard(std::shared_ptr<Board> board) { this->board = board; }
 
 void Window::loadGame() {
-    board->setPieces();
-    
-    // converts the gameStr in individual strings
-    parseAN(text, moveSetStr);  
-   
-    // converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a vector of individual moves
-    parseMoveSet(moveSetStr, moveSet);
+	board->setPieces();
 
-    moveSetIt = moveSet.begin();
+	// converts the gameStr in individual strings
+	parseAN(text, moveSetStr);
+
+	// converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a
+	// vector of individual moves
+	parseMoveSet(moveSetStr, moveSet);
+
+	moveSetIt = moveSet.begin();
 }
