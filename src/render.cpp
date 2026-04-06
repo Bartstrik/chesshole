@@ -296,6 +296,12 @@ void Window::updateWindowA() {
 		board->gameSkipFor();
 	}
 
+	if (!pause && frameCounter >= GetFPS() / 2) {
+		frameCounter = 0;
+		board->gameStepFor();
+	}
+	frameCounter++;
+
 	if (board->getGameEnd() != End::none) {
 		endGame();
 	} else {

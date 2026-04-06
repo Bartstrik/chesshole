@@ -49,6 +49,7 @@ class Window {
 	Rectangle stepForRec;
 	Rectangle skipForRec;
 	bool pause = true;
+	int frameCounter = 0;	
 
 	void initMM();
 	void initANInput();

@@ -9,7 +9,9 @@ Playing a PvP or PvE game is not yet implemented.
 To try out chesshole, simply clone the project (using --recursive to also get the raylib submodule) and build the project using cmake or whatever build tool you prefer.
 
 # TODO
- - [] Analysis: Implement the ability to step forward/backwards, skip to start/end, automatic play/pause
+ - [x] Analysis: Implement the ability to step forward/backwards, skip to start/end
+ - [x] Analysis: Implement pause/play feature
+ - [] Analysis: Scan for edge case failures (for example, I'm pretty sure that  a pawn capture leading to a promotion would fail currently.)
  - [] General: Add option to go back to main menu
  - [] PvP: implement PvP game
  - [] PvE: implement PvE game
