@@ -161,6 +161,7 @@ class Board {
 	const End getGameEnd() const;
 	void setPieces();
 	void movePiece(const Square &from, const Square &to);
+	void tryMove(const Square &from, const Square &to);
 
 	// getMoves expects an empty vector ref as argument, and it will add the
 	// squares the piece can move to. the vector is an argument and not a return

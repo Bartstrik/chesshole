@@ -1,6 +1,7 @@
 #pragma once
 
 #include "chess.hpp"
+#include "common.hpp"
 #include "raylib.h"
 #include <memory>
 #include <string>
@@ -51,17 +52,24 @@ class Window {
 	bool pause = true;
 	int frameCounter = 0;	
 
+	//PvP
+	EnumArray<EnumArray<Rectangle, 8>, 8> cellRecs;
+	Vector2 pos;
+
+
 	void initMM();
 	void initANInput();
 	void initA();
 	void initPvP();
 	void initPvE();
+	void initCtrl();
 
 	void updateWindowMM();
 	void updateWindowANInput();
 	void updateWindowA();
 	void updateWindowPvP();
 	void updateWindowPvE();
+	void updateWindowCtrl();
 
 	void drawWindowMM();
 	void drawWindowANInput();
@@ -75,6 +83,10 @@ class Window {
   public:
 	std::shared_ptr<Board> board;
 	Vector2 mousePoint = {0.0f, 0.0f};
+	Square sqRef = {Column::none, Row::none};
+	Square sqFrom = {Column::none, Row::none};
+	bool isPressed = false;
+	bool prevPressed = false;
 
 	Window(const int screenWidth, const int screenHeight);
 	~Window();
@@ -83,8 +95,8 @@ class Window {
 	void updateWindow();
 	void drawWindow();
 	void setBoard(std::shared_ptr<Board> board);
+	bool mouseOnRec(const Rectangle &rec);
 };
 
 Rectangle RectangleFromCell(std::string &cell);
-
 Rectangle RectangleFromCell(const Column col, const Row row);

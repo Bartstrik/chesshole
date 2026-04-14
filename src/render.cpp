@@ -56,6 +56,9 @@ Rectangle baseRectangleFromImage(Image image) {
 					 static_cast<float>(image.height)};
 }
 
+Rectangle RectangleFromPos(int x, int y, int screenWidth, int screenHeight) {
+	return Rectangle{x - (screenWidth - BOARD_WIDTH) / 2 - 0.5f * PIECE_WIDTH, y - (screenHeight- BOARD_HEIGHT) / 2 - 0.5f * PIECE_HEIGHT, PIECE_WIDTH, PIECE_HEIGHT};
+}
 Window::Window(const int screenWidth, const int screenHeight) {
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
@@ -184,6 +187,29 @@ void Window::initA() {
 
 	board->loadGame(text);
 
+	initCtrl();
+}
+
+void Window::initPvP() {
+	state = gameState::PvP;
+
+	board->setPieces();
+
+	initCtrl();
+	for (Column col = Column::A; col <= Column::H; ++col) {
+		for (Row row = Row::_1; row <= Row::_8; ++row) {
+			cellRecs[col][row] = RectangleFromCell(col, row);
+			cellRecs[col][row].x += 0.5f * (GetScreenWidth() - BOARD_WIDTH);
+			cellRecs[col][row].y += 0.5f * (GetScreenHeight() - BOARD_HEIGHT);
+		}
+	}
+}
+
+void Window::initPvE() {
+	// state = gameState::PvE;
+}
+
+void Window::initCtrl() {
 	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f,
 				   screenWidth * 0.15f, screenHeight * 0.1f};
 	stepBackRec = {screenWidth * 0.25f, screenHeight * 0.85f,
@@ -195,15 +221,6 @@ void Window::initA() {
 	skipForRec = {screenWidth * 0.775f, screenHeight * 0.85f,
 				  screenWidth * 0.15f, screenHeight * 0.1f};
 }
-
-void Window::initPvP() {
-	// state = gameState::PvP;
-}
-
-void Window::initPvE() {
-	// state = gameState::PvE;
-}
-
 void Window::updateWindowMM() {
 	// checking if any of the options are pressed
 	for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
@@ -267,6 +284,94 @@ void Window::updateWindowANInput() {
 }
 
 void Window::updateWindowA() {
+	updateWindowCtrl();
+
+	if (board->getGameEnd() != End::none) {
+		endGame();
+	} else {
+		board->boardImage = ImageCopy(board->originalBoardImage);
+		for (Column col = Column::A; col <= Column::H; ++col) {
+			for (Row row = Row::_1; row <= Row::_8; ++row) {
+				auto &piece = board->cells[col][row];
+				if (piece != nullptr) {
+					ImageDraw(&board->boardImage, piece->getImage(),
+							  baseRectangleFromImage(piece->getImage()),
+							  RectangleFromCell(piece->getCol(), piece->getRow()),
+							  WHITE);
+				}
+			}
+		}
+
+		texture = LoadTextureFromImage(board->boardImage);
+	}
+}
+
+void Window::updateWindowPvP() {
+	updateWindowCtrl();
+		board->boardImage = ImageCopy(board->originalBoardImage);
+
+	prevPressed = isPressed;
+	isPressed = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
+	pos = GetMousePosition();
+
+	if (prevPressed == true && isPressed == false && sqRef.col != Column::none && sqRef.row != Row::none) {
+		//maybe add button debounce if neccessary
+		sqFrom = sqRef;
+	}
+
+	if (isPressed && sqRef.col != Column::none && sqRef.row != Row::none) {
+		ImageDraw(&board->boardImage, board->cells[sqRef.col][sqRef.row]->getImage(),
+				  baseRectangleFromImage(board->cells[sqRef.col][sqRef.row]->getImage()),
+				  RectangleFromPos(pos.x, pos.y, screenWidth, screenHeight),
+				  WHITE);
+	} else {
+		sqRef = {Column::none, Row::none};
+	}
+
+	if (board->getGameEnd() != End::none) {
+		endGame();
+	} else {
+		for (Column col = Column::A; col <= Column::H; ++col) {
+			for (Row row = Row::_1; row <= Row::_8; ++row) {
+				auto &piece = board->cells[col][row];
+				auto &rec = cellRecs[col][row];
+				
+				//I need to check the mouse position, and when it held down:
+				// - store which square is being held
+				// - draw the piece below the pointer instead of its original position
+				// also need to recognize when it is released and pass this to a board function
+
+				if (prevPressed == true && isPressed == false && mouseOnRec(rec)) {
+					board->tryMove(sqFrom, {col, row}); 
+				}
+
+				if (piece != nullptr) {
+					if (isPressed) {
+						if (mouseOnRec(rec)) {
+							if (sqRef.col == Column::none && sqRef.row == Row::none) {
+								sqRef = piece->getSquare();
+							}
+						}
+					}
+
+					if (piece->getSquare() != sqRef) {
+						ImageDraw(&board->boardImage, piece->getImage(),
+								  baseRectangleFromImage(piece->getImage()),
+								  RectangleFromCell(piece->getCol(), piece->getRow()),
+								  WHITE);
+					}
+				}
+			}
+		}
+
+		texture = LoadTextureFromImage(board->boardImage);
+	}
+
+}
+
+void Window::updateWindowPvE() {}
+
+void Window::updateWindowCtrl() {
 	if (CheckCollisionPointRec(mousePoint, skipBackRec) &&
 		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
@@ -301,30 +406,7 @@ void Window::updateWindowA() {
 		board->gameStepFor();
 	}
 	frameCounter++;
-
-	if (board->getGameEnd() != End::none) {
-		endGame();
-	} else {
-		board->boardImage = ImageCopy(board->originalBoardImage);
-		for (Column col_iter = Column::A; col_iter <= Column::H; ++col_iter) {
-			for (Row row_iter = Row::_1; row_iter <= Row::_8; ++row_iter) {
-				auto &piece = board->cells[col_iter][row_iter];
-				if (piece != nullptr) {
-					ImageDraw(&board->boardImage, piece->getImage(),
-							  baseRectangleFromImage(piece->getImage()),
-							  RectangleFromCell(piece->getCol(), piece->getRow()),
-							  WHITE);
-				}
-			}
-		}
-
-		texture = LoadTextureFromImage(board->boardImage);
-	}
 }
-
-void Window::updateWindowPvP() {}
-
-void Window::updateWindowPvE() {}
 
 void Window::drawWindowMM() {
 	ClearBackground(RAYWHITE);
@@ -415,7 +497,53 @@ void Window::drawWindowA() {
 			 static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
 }
 
-void Window::drawWindowPvP() {}
+void Window::drawWindowPvP() {
+	ClearBackground(RAYWHITE);
+	DrawTexture(texture, screenWidth / 2 - texture.width / 2,
+				screenHeight / 2 - texture.height / 2, WHITE);
+
+	DrawRectangleRec(skipBackRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(skipBackRec.x),
+					   static_cast<int>(skipBackRec.y),
+					   static_cast<int>(skipBackRec.width),
+					   static_cast<int>(skipBackRec.height), DARKGRAY);
+	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth),
+			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
+
+	DrawRectangleRec(stepBackRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(stepBackRec.x),
+					   static_cast<int>(stepBackRec.y),
+					   static_cast<int>(stepBackRec.width),
+					   static_cast<int>(stepBackRec.height), DARKGRAY);
+	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth),
+			 static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
+
+	DrawRectangleRec(pauseRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(pauseRec.x),
+					   static_cast<int>(pauseRec.y),
+					   static_cast<int>(pauseRec.width),
+					   static_cast<int>(pauseRec.height), DARKGRAY);
+	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth),
+			 static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
+
+	DrawRectangleRec(stepForRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(stepForRec.x),
+					   static_cast<int>(stepForRec.y),
+					   static_cast<int>(stepForRec.width),
+					   static_cast<int>(stepForRec.height), DARKGRAY);
+	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth),
+			 static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
+
+	DrawRectangleRec(skipForRec, LIGHTGRAY);
+	DrawRectangleLines(static_cast<int>(skipForRec.x),
+					   static_cast<int>(skipForRec.y),
+					   static_cast<int>(skipForRec.width),
+					   static_cast<int>(skipForRec.height), DARKGRAY);
+	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth),
+			 static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
+}
 
 void Window::drawWindowPvE() {}
 
@@ -444,3 +572,6 @@ void Window::endGame() {
 
 void Window::setBoard(std::shared_ptr<Board> board) { this->board = board; }
 
+bool Window::mouseOnRec(const Rectangle &rec) {
+	return (pos.x >= rec.x && pos.x <= rec.x + rec.width && pos.y >= rec.y && pos.y <= rec.y + rec.height);
+}

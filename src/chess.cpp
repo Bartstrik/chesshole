@@ -124,10 +124,10 @@ void Board::endGame(const End &end) {
 
 void Board::transformPiece(const Square &square, const PieceName &pieceName) {
 	switch (pieceName) {
-	case PieceName::bishop:
-		cells[square.col][square.row] = std::make_unique<Bishop>(
+	case PieceName::rook:
+		cells[square.col][square.row] = std::make_unique<Rook>(
 			square.col, square.row, turn,
-			std::format("{}/img/{}/bishop1.png", PROJECT_ROOT_DIR,
+			std::format("{}/img/{}/rook1.png", PROJECT_ROOT_DIR,
 						playerColorCStr(turn)));
 		break;
 
@@ -138,17 +138,25 @@ void Board::transformPiece(const Square &square, const PieceName &pieceName) {
 						playerColorCStr(turn)));
 		break;
 
-	case PieceName::rook:
-		cells[square.col][square.row] = std::make_unique<Rook>(
+	case PieceName::bishop:
+		cells[square.col][square.row] = std::make_unique<Bishop>(
 			square.col, square.row, turn,
-			std::format("{}/img/{}/rook1.png", PROJECT_ROOT_DIR,
+			std::format("{}/img/{}/bishop1.png", PROJECT_ROOT_DIR,
 						playerColorCStr(turn)));
 		break;
+
 
 	case PieceName::queen:
 		cells[square.col][square.row] = std::make_unique<Queen>(
 			square.col, square.row, turn,
 			std::format("{}/img/{}/queen1.png", PROJECT_ROOT_DIR,
+						playerColorCStr(turn)));
+		break;
+
+	case PieceName::king:
+		cells[square.col][square.row] = std::make_unique<King>(
+			square.col, square.row, turn,
+			std::format("{}/img/{}/king1.png", PROJECT_ROOT_DIR,
 						playerColorCStr(turn)));
 		break;
 
@@ -641,6 +649,10 @@ void Board::movePiece(const Square &from, const Square &to) {
 	toPiece->setRow(to.row);
 
 	return;
+}
+
+void Board::tryMove(const Square &from, const Square &to) {
+	std::cout << "move attempted!" << std::endl;
 }
 
 void Board::getMoves(const Column &col, const Row &row,
