@@ -120,8 +120,7 @@ const Move parseMove(const std::string &str) {
 
 // Note: For pawns, the entire string is expected to be passed in, for other
 // pieces, the first char is omitted
-void parseMoveWithPieceKnown(Move &move, std::string::const_iterator begin,
-							 std::string::const_iterator end) {
+void parseMoveWithPieceKnown(Move &move, std::string::const_iterator begin, std::string::const_iterator end) {
 	bool toRowSet = false;
 	bool toColSet = false;
 

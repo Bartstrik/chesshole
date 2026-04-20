@@ -140,3 +140,8 @@ std::ostream &operator<<(std::ostream &os, const Row &row) {
 	}
 	return os;
 }
+
+std::ostream &operator<<(std::ostream &os, const Square &sq) {
+	os << sq.col << sq.row;
+	return os;
+}

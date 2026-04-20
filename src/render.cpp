@@ -1,7 +1,6 @@
 #include "render.hpp"
 #include "assert.h"
 #include "common.hpp"
-#include "lexer.hpp"
 #include "raylib.h"
 #include <memory>
 
@@ -32,10 +31,8 @@ Rectangle RectangleFromCell(std::string cell) {
 	assert(correctRow);
 
 	// creating the rectangle type
-	float x =
-		static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y +
-			  BOARD_PADDING_Y;
+	float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
+	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
 	return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
@@ -44,20 +41,18 @@ Rectangle RectangleFromCell(const Column col, const Row row) {
 	assert(row >= Row::_1 && row <= Row::_8);
 
 	// creating the rectangle type
-	float x =
-		static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
-	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y +
-			  BOARD_PADDING_Y;
+	float x = static_cast<float>(col) * CELL_WIDTH + CELL_PADDING_X + BOARD_PADDING_X;
+	float y = (7.0f - static_cast<float>(row)) * CELL_HEIGHT + CELL_PADDING_Y + BOARD_PADDING_Y;
 	return Rectangle{x, y, PIECE_WIDTH, PIECE_HEIGHT};
 }
 
 Rectangle baseRectangleFromImage(Image image) {
-	return Rectangle{0, 0, static_cast<float>(image.width),
-					 static_cast<float>(image.height)};
+	return Rectangle{0, 0, static_cast<float>(image.width), static_cast<float>(image.height)};
 }
 
 Rectangle RectangleFromPos(int x, int y, int screenWidth, int screenHeight) {
-	return Rectangle{x - (screenWidth - BOARD_WIDTH) / 2 - 0.5f * PIECE_WIDTH, y - (screenHeight- BOARD_HEIGHT) / 2 - 0.5f * PIECE_HEIGHT, PIECE_WIDTH, PIECE_HEIGHT};
+	return Rectangle{x - (screenWidth - BOARD_WIDTH) / 2 - 0.5f * PIECE_WIDTH,
+					 y - (screenHeight - BOARD_HEIGHT) / 2 - 0.5f * PIECE_HEIGHT, PIECE_WIDTH, PIECE_HEIGHT};
 }
 Window::Window(const int screenWidth, const int screenHeight) {
 	this->screenWidth = screenWidth;
@@ -173,18 +168,17 @@ void Window::initMM() {
 void Window::initANInput() {
 	state = gameState::ANInput;
 
-	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f,
-			   screenHeight * 0.4f};
+	textBox = {screenWidth * 0.1f, screenHeight * 0.3f, screenWidth * 0.8f, screenHeight * 0.4f};
 	text.reserve(MAX_INPUT_CHARS);
 	letterCount = text.size();
 
-	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f,
-				screenHeight * 0.05f};
+	enterBox = {screenWidth * 0.75f, screenHeight * 0.75f, screenWidth * 0.1f, screenHeight * 0.05f};
 }
 
 void Window::initA() {
 	state = gameState::Analysis;
 
+	board->setPieces();
 	board->loadGame(text);
 
 	initCtrl();
@@ -210,22 +204,16 @@ void Window::initPvE() {
 }
 
 void Window::initCtrl() {
-	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f,
-				   screenWidth * 0.15f, screenHeight * 0.1f};
-	stepBackRec = {screenWidth * 0.25f, screenHeight * 0.85f,
-				   screenWidth * 0.15f, screenHeight * 0.1f};
-	pauseRec = {screenWidth * 0.425f, screenHeight * 0.85f, screenWidth * 0.15f,
-				screenHeight * 0.1f};
-	stepForRec = {screenWidth * 0.6f, screenHeight * 0.85f, screenWidth * 0.15f,
-				  screenHeight * 0.1f};
-	skipForRec = {screenWidth * 0.775f, screenHeight * 0.85f,
-				  screenWidth * 0.15f, screenHeight * 0.1f};
+	skipBackRec = {screenWidth * 0.075f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	stepBackRec = {screenWidth * 0.25f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	pauseRec = {screenWidth * 0.425f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	stepForRec = {screenWidth * 0.6f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
+	skipForRec = {screenWidth * 0.775f, screenHeight * 0.85f, screenWidth * 0.15f, screenHeight * 0.1f};
 }
 void Window::updateWindowMM() {
 	// checking if any of the options are pressed
 	for (uint8_t i = 0; i < STATES_AMOUNT - 1; i++) {
-		if (CheckCollisionPointRec(mousePoint, options[i]) &&
-			IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		if (CheckCollisionPointRec(mousePoint, options[i]) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			init(static_cast<gameState>(i + 1));
 		}
 	}
@@ -238,15 +226,13 @@ void Window::updateWindowANInput() {
 		int key = GetKeyPressed();
 
 		// CTRL+BACKSPACE
-		if (IsKeyPressed(KEY_BACKSPACE) &&
-			(IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
+		if (IsKeyPressed(KEY_BACKSPACE) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
 			letterCount = 0;
 			text.clear();
 			text.reserve(MAX_INPUT_CHARS);
 
 			// CTRL+V (paste clipboard)
-		} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) ||
-										   IsKeyDown(KEY_RIGHT_CONTROL))) {
+		} else if (IsKeyPressed(KEY_V) && (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL))) {
 			std::string clip = GetClipboardText();
 			if (clip.size() + letterCount <= MAX_INPUT_CHARS) {
 				text.append(clip.c_str());
@@ -264,8 +250,7 @@ void Window::updateWindowANInput() {
 		} else {
 			// check for multiple keypresses
 			while (key > 0) {
-				if ((key >= 32) && (key <= 125) &&
-					(letterCount < MAX_INPUT_CHARS)) {
+				if ((key >= 32) && (key <= 125) && (letterCount < MAX_INPUT_CHARS)) {
 					text.push_back(static_cast<char>(key));
 					letterCount++;
 				}
@@ -277,8 +262,7 @@ void Window::updateWindowANInput() {
 		SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 	}
 
-	if (CheckCollisionPointRec(mousePoint, enterBox) &&
-		IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+	if (CheckCollisionPointRec(mousePoint, enterBox) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 		init(gameState::Analysis);
 	}
 }
@@ -294,10 +278,8 @@ void Window::updateWindowA() {
 			for (Row row = Row::_1; row <= Row::_8; ++row) {
 				auto &piece = board->cells[col][row];
 				if (piece != nullptr) {
-					ImageDraw(&board->boardImage, piece->getImage(),
-							  baseRectangleFromImage(piece->getImage()),
-							  RectangleFromCell(piece->getCol(), piece->getRow()),
-							  WHITE);
+					ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()),
+							  RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
 				}
 			}
 		}
@@ -308,22 +290,21 @@ void Window::updateWindowA() {
 
 void Window::updateWindowPvP() {
 	updateWindowCtrl();
-		board->boardImage = ImageCopy(board->originalBoardImage);
+	board->boardImage = ImageCopy(board->originalBoardImage);
 
 	prevPressed = isPressed;
 	isPressed = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
 	pos = GetMousePosition();
 
 	if (prevPressed == true && isPressed == false && sqRef.col != Column::none && sqRef.row != Row::none) {
-		//maybe add button debounce if neccessary
+		// maybe add button debounce if neccessary
 		sqFrom = sqRef;
 	}
 
 	if (isPressed && sqRef.col != Column::none && sqRef.row != Row::none) {
 		ImageDraw(&board->boardImage, board->cells[sqRef.col][sqRef.row]->getImage(),
 				  baseRectangleFromImage(board->cells[sqRef.col][sqRef.row]->getImage()),
-				  RectangleFromPos(pos.x, pos.y, screenWidth, screenHeight),
-				  WHITE);
+				  RectangleFromPos(pos.x, pos.y, screenWidth, screenHeight), WHITE);
 	} else {
 		sqRef = {Column::none, Row::none};
 	}
@@ -335,14 +316,14 @@ void Window::updateWindowPvP() {
 			for (Row row = Row::_1; row <= Row::_8; ++row) {
 				auto &piece = board->cells[col][row];
 				auto &rec = cellRecs[col][row];
-				
-				//I need to check the mouse position, and when it held down:
-				// - store which square is being held
-				// - draw the piece below the pointer instead of its original position
-				// also need to recognize when it is released and pass this to a board function
+
+				// I need to check the mouse position, and when it held down:
+				//  - store which square is being held
+				//  - draw the piece below the pointer instead of its original position
+				//  also need to recognize when it is released and pass this to a board function
 
 				if (prevPressed == true && isPressed == false && mouseOnRec(rec)) {
-					board->tryMove(sqFrom, {col, row}); 
+					board->tryMove(sqFrom, {col, row});
 				}
 
 				if (piece != nullptr) {
@@ -355,10 +336,8 @@ void Window::updateWindowPvP() {
 					}
 
 					if (piece->getSquare() != sqRef) {
-						ImageDraw(&board->boardImage, piece->getImage(),
-								  baseRectangleFromImage(piece->getImage()),
-								  RectangleFromCell(piece->getCol(), piece->getRow()),
-								  WHITE);
+						ImageDraw(&board->boardImage, piece->getImage(), baseRectangleFromImage(piece->getImage()),
+								  RectangleFromCell(piece->getCol(), piece->getRow()), WHITE);
 					}
 				}
 			}
@@ -366,37 +345,31 @@ void Window::updateWindowPvP() {
 
 		texture = LoadTextureFromImage(board->boardImage);
 	}
-
 }
 
 void Window::updateWindowPvE() {}
 
 void Window::updateWindowCtrl() {
-	if (CheckCollisionPointRec(mousePoint, skipBackRec) &&
-		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, skipBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 		board->gameSkipBack();
 	}
 
-	if (CheckCollisionPointRec(mousePoint, stepBackRec) &&
-		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, stepBackRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 		board->gameStepBack();
 	}
 
-	if (CheckCollisionPointRec(mousePoint, pauseRec) &&
-		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, pauseRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = !pause;
 	}
 
-	if (CheckCollisionPointRec(mousePoint, stepForRec) &&
-		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, stepForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 		board->gameStepFor();
 	}
 
-	if (CheckCollisionPointRec(mousePoint, skipForRec) &&
-		IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+	if (CheckCollisionPointRec(mousePoint, skipForRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
 		pause = true;
 		board->gameSkipFor();
 	}
@@ -425,24 +398,17 @@ void Window::drawWindowMM() {
 void Window::drawWindowANInput() {
 	ClearBackground(RAYWHITE);
 
-	DrawText("Please insert the game in algebraic notations below",
-			 screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
+	DrawText("Please insert the game in algebraic notations below", screenWidth * 0.1f, screenHeight * 0.2f, 20, GRAY);
 	DrawRectangleRec(textBox, LIGHTGRAY);
 	if (mouseOnText) {
-		DrawRectangleLines(static_cast<int>(textBox.x),
-						   static_cast<int>(textBox.y),
-						   static_cast<int>(textBox.width),
+		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width),
 						   static_cast<int>(textBox.height), RED);
 	} else {
-		DrawRectangleLines(static_cast<int>(textBox.x),
-						   static_cast<int>(textBox.y),
-						   static_cast<int>(textBox.width),
+		DrawRectangleLines(static_cast<int>(textBox.x), static_cast<int>(textBox.y), static_cast<int>(textBox.width),
 						   static_cast<int>(textBox.height), DARKGRAY);
 	}
-	DrawText(text.c_str(), static_cast<int>(textBox.x + 5),
-			 static_cast<int>(textBox.y + 8), 40, MAROON);
-	DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS),
-			 screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
+	DrawText(text.c_str(), static_cast<int>(textBox.x + 5), static_cast<int>(textBox.y + 8), 40, MAROON);
+	DrawText(TextFormat("INPUT CHARS: %i/%i", letterCount, MAX_INPUT_CHARS), screenWidth * 0.1f, screenHeight * 0.8f, 20, GRAY);
 
 	// Enter button
 	DrawRectangleRec(enterBox, LIGHTGRAY);
@@ -451,98 +417,72 @@ void Window::drawWindowANInput() {
 
 void Window::drawWindowA() {
 	ClearBackground(RAYWHITE);
-	DrawTexture(texture, screenWidth / 2 - texture.width / 2,
-				screenHeight / 2 - texture.height / 2, WHITE);
+	DrawTexture(texture, screenWidth / 2 - texture.width / 2, screenHeight / 2 - texture.height / 2, WHITE);
 
 	DrawRectangleRec(skipBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipBackRec.x),
-					   static_cast<int>(skipBackRec.y),
-					   static_cast<int>(skipBackRec.width),
+	DrawRectangleLines(static_cast<int>(skipBackRec.x), static_cast<int>(skipBackRec.y), static_cast<int>(skipBackRec.width),
 					   static_cast<int>(skipBackRec.height), DARKGRAY);
 	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth),
-			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20,
-			 BLACK);
+			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20, BLACK);
 
 	DrawRectangleRec(stepBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepBackRec.x),
-					   static_cast<int>(stepBackRec.y),
-					   static_cast<int>(stepBackRec.width),
+	DrawRectangleLines(static_cast<int>(stepBackRec.x), static_cast<int>(stepBackRec.y), static_cast<int>(stepBackRec.width),
 					   static_cast<int>(stepBackRec.height), DARKGRAY);
-	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth),
-			 static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20,
-			 BLACK);
+	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth), static_cast<int>(stepBackRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 
 	DrawRectangleRec(pauseRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(pauseRec.x),
-					   static_cast<int>(pauseRec.y),
-					   static_cast<int>(pauseRec.width),
+	DrawRectangleLines(static_cast<int>(pauseRec.x), static_cast<int>(pauseRec.y), static_cast<int>(pauseRec.width),
 					   static_cast<int>(pauseRec.height), DARKGRAY);
-	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth),
-			 static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth), static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
 
 	DrawRectangleRec(stepForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepForRec.x),
-					   static_cast<int>(stepForRec.y),
-					   static_cast<int>(stepForRec.width),
+	DrawRectangleLines(static_cast<int>(stepForRec.x), static_cast<int>(stepForRec.y), static_cast<int>(stepForRec.width),
 					   static_cast<int>(stepForRec.height), DARKGRAY);
-	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth),
-			 static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth), static_cast<int>(stepForRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 
 	DrawRectangleRec(skipForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipForRec.x),
-					   static_cast<int>(skipForRec.y),
-					   static_cast<int>(skipForRec.width),
+	DrawRectangleLines(static_cast<int>(skipForRec.x), static_cast<int>(skipForRec.y), static_cast<int>(skipForRec.width),
 					   static_cast<int>(skipForRec.height), DARKGRAY);
-	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth),
-			 static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth), static_cast<int>(skipForRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 }
 
 void Window::drawWindowPvP() {
 	ClearBackground(RAYWHITE);
-	DrawTexture(texture, screenWidth / 2 - texture.width / 2,
-				screenHeight / 2 - texture.height / 2, WHITE);
+	DrawTexture(texture, screenWidth / 2 - texture.width / 2, screenHeight / 2 - texture.height / 2, WHITE);
 
 	DrawRectangleRec(skipBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipBackRec.x),
-					   static_cast<int>(skipBackRec.y),
-					   static_cast<int>(skipBackRec.width),
+	DrawRectangleLines(static_cast<int>(skipBackRec.x), static_cast<int>(skipBackRec.y), static_cast<int>(skipBackRec.width),
 					   static_cast<int>(skipBackRec.height), DARKGRAY);
 	DrawText("|<<", static_cast<int>(skipBackRec.x + 0.025f * screenWidth),
-			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20,
-			 BLACK);
+			 static_cast<int>(skipBackRec.y + 0.025f * screenHeight), 20, BLACK);
 
 	DrawRectangleRec(stepBackRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepBackRec.x),
-					   static_cast<int>(stepBackRec.y),
-					   static_cast<int>(stepBackRec.width),
+	DrawRectangleLines(static_cast<int>(stepBackRec.x), static_cast<int>(stepBackRec.y), static_cast<int>(stepBackRec.width),
 					   static_cast<int>(stepBackRec.height), DARKGRAY);
-	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth),
-			 static_cast<int>(stepBackRec.y + 0.025f * screenHeight), 20,
-			 BLACK);
+	DrawText("<", static_cast<int>(stepBackRec.x + 0.025f * screenWidth), static_cast<int>(stepBackRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 
 	DrawRectangleRec(pauseRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(pauseRec.x),
-					   static_cast<int>(pauseRec.y),
-					   static_cast<int>(pauseRec.width),
+	DrawRectangleLines(static_cast<int>(pauseRec.x), static_cast<int>(pauseRec.y), static_cast<int>(pauseRec.width),
 					   static_cast<int>(pauseRec.height), DARKGRAY);
-	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth),
-			 static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText("=", static_cast<int>(pauseRec.x + 0.025f * screenWidth), static_cast<int>(pauseRec.y + 0.025f * screenHeight), 20,
+			 BLACK);
 
 	DrawRectangleRec(stepForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(stepForRec.x),
-					   static_cast<int>(stepForRec.y),
-					   static_cast<int>(stepForRec.width),
+	DrawRectangleLines(static_cast<int>(stepForRec.x), static_cast<int>(stepForRec.y), static_cast<int>(stepForRec.width),
 					   static_cast<int>(stepForRec.height), DARKGRAY);
-	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth),
-			 static_cast<int>(stepForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText(">", static_cast<int>(stepForRec.x + 0.025f * screenWidth), static_cast<int>(stepForRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 
 	DrawRectangleRec(skipForRec, LIGHTGRAY);
-	DrawRectangleLines(static_cast<int>(skipForRec.x),
-					   static_cast<int>(skipForRec.y),
-					   static_cast<int>(skipForRec.width),
+	DrawRectangleLines(static_cast<int>(skipForRec.x), static_cast<int>(skipForRec.y), static_cast<int>(skipForRec.width),
 					   static_cast<int>(skipForRec.height), DARKGRAY);
-	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth),
-			 static_cast<int>(skipForRec.y + 0.025f * screenHeight), 20, BLACK);
+	DrawText(">>|", static_cast<int>(skipForRec.x + 0.025f * screenWidth), static_cast<int>(skipForRec.y + 0.025f * screenHeight),
+			 20, BLACK);
 }
 
 void Window::drawWindowPvE() {}
@@ -550,18 +490,15 @@ void Window::drawWindowPvE() {}
 void Window::endGame() {
 	switch (board->getGameEnd()) {
 	case End::whiteWins:
-		texture = LoadTextureFromImage(LoadImage(
-			std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
+		texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/whiteWins.png", PROJECT_ROOT_DIR).c_str()));
 		break;
 
 	case End::blackWins:
-		texture = LoadTextureFromImage(LoadImage(
-			std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
+		texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/blackWins.png", PROJECT_ROOT_DIR).c_str()));
 		break;
 
 	case End::draw:
-		texture = LoadTextureFromImage(LoadImage(
-			std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
+		texture = LoadTextureFromImage(LoadImage(std::format("{}/img/end/draw.png", PROJECT_ROOT_DIR).c_str()));
 		break;
 
 	default:

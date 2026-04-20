@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <initializer_list>
 #include <memory>
 #include <string>
@@ -20,8 +21,7 @@ class Piece {
 
   public:
 	Piece() = delete;
-	Piece(const PieceName &name, const Column &col, const Row &row,
-		  const PlayerColor &player, const std::string &imagePath);
+	Piece(const PieceName &name, const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	virtual ~Piece();
 
 	const PieceName getName() const;
@@ -48,8 +48,7 @@ class Pawn : public Piece {
 
   public:
 	Pawn() = delete;
-	Pawn(const Column &col, const Row &row, const PlayerColor &player,
-		 const std::string &imagePath);
+	Pawn(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~Pawn();
 };
 
@@ -59,8 +58,7 @@ class Rook : public Piece {
 
   public:
 	Rook() = delete;
-	Rook(const Column &col, const Row &row, const PlayerColor &player,
-		 const std::string &imagePath);
+	Rook(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~Rook();
 };
 
@@ -68,8 +66,7 @@ class Knight : public Piece {
   private:
   public:
 	Knight() = delete;
-	Knight(const Column &col, const Row &row, const PlayerColor &player,
-		   const std::string &imagePath);
+	Knight(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~Knight();
 };
 
@@ -77,8 +74,7 @@ class Bishop : public Piece {
   private:
   public:
 	Bishop() = delete;
-	Bishop(const Column &col, const Row &row, const PlayerColor &player,
-		   const std::string &imagePath);
+	Bishop(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~Bishop();
 };
 
@@ -86,8 +82,7 @@ class Queen : public Piece {
   private:
   public:
 	Queen() = delete;
-	Queen(const Column &col, const Row &row, const PlayerColor &player,
-		  const std::string &imagePath);
+	Queen(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~Queen();
 };
 
@@ -97,32 +92,28 @@ class King : public Piece {
 
   public:
 	King() = delete;
-	King(const Column &col, const Row &row, const PlayerColor &player,
-		 const std::string &imagePath);
+	King(const Column &col, const Row &row, const PlayerColor &player, const std::string &imagePath);
 	~King();
 };
 
 template <typename T, std::size_t N> struct EnumArray {
 	std::array<T, N> data{};
 
-	template <typename E> constexpr T &operator[](E e) {
-		return data[std::to_underlying(e)];
-	}
+	template <typename E> constexpr T &operator[](E e) { return data[std::to_underlying(e)]; }
 
-	template <typename E> constexpr const T &operator[](E e) const {
-		return data[std::to_underlying(e)];
-	}
+	template <typename E> constexpr const T &operator[](E e) const { return data[std::to_underlying(e)]; }
 };
 
 class Board {
   private:
 	std::vector<Move> game{};
-	std::vector<Move>::iterator gameIt;
+	std::size_t gameIt = 0;
 
 	PlayerColor turn = PlayerColor::white;
-	bool whiteCanCastle = true;
-	bool blackCanCastle = true;
-	bool check = false;
+	bool whiteCanCastleKingside = true;
+	bool whiteCanCastleQueenside = true;
+	bool blackCanCastleKingside = true;
+	bool blackCanCastleQueenside = true;
 	End gameEnd = End::none;
 
 	void toggleTurn();
@@ -132,20 +123,14 @@ class Board {
 	void unCastle(const CastleSide &castleSide);
 	void drawOffer() const;
 	void removePiece(const Square &square);
-	const Square findMove(const Move &move);
+	const Square findMove(Move &move);
 
-	void getPawnMoves(const std::unique_ptr<Piece> &piece,
-					  std::vector<Square> &to);
-	void getRookMoves(const std::unique_ptr<Piece> &piece,
-					  std::vector<Square> &to);
-	void getKnightMoves(const std::unique_ptr<Piece> &piece,
-						std::vector<Square> &to);
-	void getBishopMoves(const std::unique_ptr<Piece> &piece,
-						std::vector<Square> &to);
-	void getQueenMoves(const std::unique_ptr<Piece> &piece,
-					   std::vector<Square> &to);
-	void getKingMoves(const std::unique_ptr<Piece> &piece,
-					  std::vector<Square> &to);
+	void getPawnMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
+	void getRookMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
+	void getKnightMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
+	void getBishopMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
+	void getQueenMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
+	void getKingMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
 
   public:
 	EnumArray<EnumArray<std::unique_ptr<Piece>, 8>, 8> cells;
@@ -156,7 +141,7 @@ class Board {
 	virtual ~Board();
 
 	const std::vector<Move> getGame() const;
-	void setGame(std::initializer_list<Move> iList );
+	void setGame(std::initializer_list<Move> iList);
 	const PlayerColor getTurn() const;
 	const End getGameEnd() const;
 	void setPieces();
@@ -171,14 +156,16 @@ class Board {
 	// Using the Move type, current board position and the game rules, we try to
 	// determine the actual move itself.
 	void doMove(Move &move);
-	void undoMove(const Move &move);
+	void undoMove(Move &move);
 
-	const bool moveIsCheck(const Square &from, const Square &to);
+	const bool moveChecksSelf(const Move &move);
+	const bool moveChecksOpponent(const Move &move);
+	const bool moveChecks(const Move &move, const PlayerColor player);
 
 	void gameSkipBack();
 	void gameStepBack();
 	void gameStepFor();
 	void gameSkipFor();
 
-	void loadGame(const std::string& text);
+	void loadGame(const std::string &text);
 };

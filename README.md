@@ -4,6 +4,8 @@ My attempt at a simple chess application using raylib.
 Currently, only the analysis option is implemented, which allows the user to input a game in algebraic notation and watch the game unfold.
 Playing a PvP or PvE game is not yet implemented.
 
+Beware that this code has neither been optimized semantically nor for performance. I have been procrastinating this and plan to work on this after the basic gamemodes(Analysis, PvP, PvE) are finished.
+
 # Instalation
 
 To try out chesshole, simply clone the project (using --recursive to also get the raylib submodule) and build the project using cmake or whatever build tool you prefer.

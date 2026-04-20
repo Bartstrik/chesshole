@@ -14,8 +14,7 @@ void parseAN(const std::string &str, std::vector<std::string> &dest);
 
 const Move parseMove(const std::string &str);
 
-void parseMoveWithPieceKnown(Move &move, std::string::const_iterator begin,
-							 std::string::const_iterator end);
+void parseMoveWithPieceKnown(Move &move, std::string::const_iterator begin, std::string::const_iterator end);
 
 // converts the vector of moves in {"f3", "e5", "g4", "Qh4#"} format into a
 // vector of individual moves

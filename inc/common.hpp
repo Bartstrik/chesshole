@@ -67,10 +67,14 @@ struct Square {
 	Column col = Column::none;
 	Row row = Row::none;
 
-	constexpr bool operator==(auto sq) {
-		return (this->col == sq.col && this->row == sq.row);
-	}
+	constexpr bool operator==(auto sq) { return (this->col == sq.col && this->row == sq.row); }
 };
+
+std::ostream &operator<<(std::ostream &os, const Square &sq);
+
+constexpr bool operator==(const Square &sq1, const Square &sq2) {
+	return ((sq1.col == sq2.col) && (sq1.row == sq2.row));
+}
 
 struct Move {
 	Square from;
@@ -104,8 +108,7 @@ constexpr Column &operator--(Column &col) {
 }
 
 constexpr Column &operator+=(Column &col, Column num) {
-	col =
-		static_cast<Column>(std::to_underlying(col) + std::to_underlying(num));
+	col = static_cast<Column>(std::to_underlying(col) + std::to_underlying(num));
 	return col;
 }
 
@@ -115,22 +118,16 @@ constexpr Column &operator+=(Column &col, int8_t num) {
 }
 
 constexpr Column operator+(Column col, Column num) {
-	return static_cast<Column>(std::to_underlying(col) +
-							   std::to_underlying(num));
+	return static_cast<Column>(std::to_underlying(col) + std::to_underlying(num));
 }
 
 constexpr Column operator-(Column col, Column num) {
-	return static_cast<Column>(std::to_underlying(col) -
-							   std::to_underlying(num));
+	return static_cast<Column>(std::to_underlying(col) - std::to_underlying(num));
 }
 
-constexpr Column operator+(Column col, int8_t num) {
-	return static_cast<Column>(std::to_underlying(col) + num);
-}
+constexpr Column operator+(Column col, int8_t num) { return static_cast<Column>(std::to_underlying(col) + num); }
 
-constexpr Column operator-(Column col, int8_t num) {
-	return static_cast<Column>(std::to_underlying(col) - num);
-}
+constexpr Column operator-(Column col, int8_t num) { return static_cast<Column>(std::to_underlying(col) - num); }
 
 constexpr Row &operator++(Row &row) {
 	row = static_cast<Row>(std::to_underlying(row) + 1);
@@ -152,18 +149,10 @@ constexpr Row &operator+=(Row &row, int8_t num) {
 	return row;
 }
 
-constexpr Row operator+(Row row, Row num) {
-	return static_cast<Row>(std::to_underlying(row) + std::to_underlying(num));
-}
+constexpr Row operator+(Row row, Row num) { return static_cast<Row>(std::to_underlying(row) + std::to_underlying(num)); }
 
-constexpr Row operator-(Row row, Row num) {
-	return static_cast<Row>(std::to_underlying(row) - std::to_underlying(num));
-}
+constexpr Row operator-(Row row, Row num) { return static_cast<Row>(std::to_underlying(row) - std::to_underlying(num)); }
 
-constexpr Row operator+(Row row, int8_t num) {
-	return static_cast<Row>(std::to_underlying(row) + num);
-}
+constexpr Row operator+(Row row, int8_t num) { return static_cast<Row>(std::to_underlying(row) + num); }
 
-constexpr Row operator-(Row row, int8_t num) {
-	return static_cast<Row>(std::to_underlying(row) - num);
-}
+constexpr Row operator-(Row row, int8_t num) { return static_cast<Row>(std::to_underlying(row) - num); }
