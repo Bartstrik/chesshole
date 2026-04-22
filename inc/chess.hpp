@@ -125,6 +125,14 @@ class Board {
 	void removePiece(const Square &square);
 	const Square findMove(Move &move);
 
+	const bool findPawnMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool findRookMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool findKnightMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool findBishopMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool findQueenMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool findKingMoves(Move& move, const std::unique_ptr<Piece>& piece);
+	const bool pieceMatchesMove(Move& move, const std::unique_ptr<Piece>& piece, const std::vector<Square>& ret);
+
 	void getPawnMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
 	void getRookMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);
 	void getKnightMoves(const std::unique_ptr<Piece> &piece, std::vector<Square> &to);

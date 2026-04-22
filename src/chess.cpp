@@ -156,17 +156,17 @@ void Board::castle(const CastleSide &castleSide) {
 	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
 
 	switch (turn) {
-		case PlayerColor::white:
+	case PlayerColor::white:
 		if (castleSide == CastleSide::kingSide) whiteCanCastleKingside = false;
 		if (castleSide == CastleSide::queenSide) whiteCanCastleQueenside = false;
 		break;
 
-		case PlayerColor::black:
+	case PlayerColor::black:
 		if (castleSide == CastleSide::kingSide) blackCanCastleKingside = false;
 		if (castleSide == CastleSide::queenSide) blackCanCastleQueenside = false;
 		break;
 
-		default:
+	default:
 		break;
 	}
 
@@ -202,17 +202,17 @@ void Board::unCastle(const CastleSide &castleSide) {
 	assert(castleSide == CastleSide::kingSide || castleSide == CastleSide::queenSide);
 
 	switch (turn) {
-		case PlayerColor::white:
+	case PlayerColor::white:
 		if (castleSide == CastleSide::kingSide) whiteCanCastleKingside = true;
 		if (castleSide == CastleSide::queenSide) whiteCanCastleQueenside = true;
 		break;
 
-		case PlayerColor::black:
+	case PlayerColor::black:
 		if (castleSide == CastleSide::kingSide) blackCanCastleKingside = true;
 		if (castleSide == CastleSide::queenSide) blackCanCastleQueenside = true;
 		break;
 
-		default:
+	default:
 		break;
 	}
 
@@ -253,7 +253,6 @@ void Board::drawOffer() const {
 	std::cout << str.c_str() << std::endl;
 }
 
-// public:
 Board::Board(const std::string &boardImagePath) {
 	assert(!boardImagePath.empty());
 	originalBoardImage = LoadImage(boardImagePath.c_str());
@@ -347,16 +346,11 @@ void Board::setPieces() {
 void Board::removePiece(const Square &square) { cells[square.col][square.row] = nullptr; }
 
 const Square Board::findMove(Move &move) {
-	// looping through the whole board and finding which piece can move to
-	// move.to. should use the attributes inside the move structs, specifically
-	// when the piece is known, and when the move results in a check captures
-	// are only relevant for enpessant which is already covered in the doMove
-	// function.
+	// This function tries to find all pieces which can do the move, which should be exactly one.
+	// Done by looping through the whole board and finding which piece can move to move.to.
 
 	// TODO: implement function for each piece similar to the getMoves functions
 	// but which has move.to as input argument
-
-	std::vector<Square> ret{};
 
 	const Column colStart = (move.from.col == Column::none) ? Column::A : move.from.col;
 	const Column colEnd = (move.from.col == Column::none) ? Column::H : move.from.col;
@@ -365,215 +359,104 @@ const Square Board::findMove(Move &move) {
 	const Row rowEnd = (move.from.row == Row::none) ? Row::_8 : move.from.row;
 
 	// starting with known piecename case:
-	switch (move.piece) {
-	case PieceName::pawn:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::pawn) {
-					getPawnMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+	for (Column col = colStart; col <= colEnd; ++col) {
+		for (Row row = rowStart; row <= rowEnd; ++row) {
+			const auto& piece = cells[col][row];
+			if (piece == nullptr || piece->getPlayerColor() != turn) continue;
+			if (move.piece != PieceName::none && move.piece != piece->getName()) continue;
+			
+			switch (piece->getName()) {
+			case PieceName::pawn:
+				if (findPawnMoves(move, piece)) {
+					return {col, row};
+				} else continue;
 
-	case PieceName::rook:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::rook) {
-					getRookMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+			case PieceName::rook:
+				if (findRookMoves(move, piece)) {
+					return {col, row};
+				} else continue;
+				
 
-	case PieceName::knight:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::knight) {
-					getKnightMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+			case PieceName::knight:
+				if (findKnightMoves(move, piece)) {
+					return {col, row};
+				} else continue;
 
-	case PieceName::bishop:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::bishop) {
-					getBishopMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+			case PieceName::bishop:
+				if (findBishopMoves(move, piece)) {
+					return {col, row};
+				} else continue;
 
-	case PieceName::queen:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::queen) {
-					getQueenMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+			case PieceName::queen:
+				if (findQueenMoves(move, piece)) {
+					return {col, row};
+				} else continue;
 
-	case PieceName::king:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece != nullptr && piece->getPlayerColor() == turn && piece->getName() == PieceName::king) {
-					getKingMoves(piece, ret);
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
-			}
-		}
-		assert(0);
-		break;
+			case PieceName::king:
+				if (findKingMoves(move, piece)) {
+					return {col, row};
+				} else continue;
 
-	default:
-		// Unknown piecename case:
-		for (Column col = colStart; col <= colEnd; ++col) {
-			for (Row row = rowStart; row <= rowEnd; ++row) {
-				auto &piece = cells[col][row];
-				if (piece == nullptr)
-					continue;
-
-				if (piece->getPlayerColor() == turn) {
-					switch (piece->getName()) {
-					case PieceName::pawn:
-						getPawnMoves(piece, ret);
-						break;
-
-					case PieceName::rook:
-						getRookMoves(piece, ret);
-						break;
-
-					case PieceName::knight:
-						getKnightMoves(piece, ret);
-						break;
-
-					case PieceName::bishop:
-						getBishopMoves(piece, ret);
-						break;
-
-					case PieceName::queen:
-						getQueenMoves(piece, ret);
-						break;
-
-					case PieceName::king:
-						getKingMoves(piece, ret);
-						break;
-
-					default:
-						assert(0);
-						break;
-					}
-
-					for (auto &entry : ret) {
-						if (entry == move.to) {
-							if (move.check) {
-								move.from = {col, row};
-								if (moveChecksOpponent(move)) {
-									return Square{col, row};
-								}
-							} else {
-								return Square{col, row};
-							}
-						}
-					}
-					ret.clear();
-				}
+			case PieceName::none:
+			default:
+				assert(0);
 			}
 		}
 	}
 	assert(0);
 	return Square{Column::none, Row::none};
+}
+
+const bool Board::findPawnMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getPawnMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::findRookMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getRookMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::findKnightMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getKnightMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::findBishopMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getBishopMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::findQueenMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getQueenMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::findKingMoves(Move& move, const std::unique_ptr<Piece>& piece) {
+	std::vector<Square> ret{};
+	getKingMoves(piece, ret);
+	return pieceMatchesMove(move, piece, ret);
+}
+
+const bool Board::pieceMatchesMove(Move& move, const std::unique_ptr<Piece>& piece, const std::vector<Square>& ret) {
+	for (auto &entry : ret) {
+		if (entry == move.to) {
+			if (move.check) {
+				move.from = {piece->getCol(), piece->getRow()};
+				if (moveChecksOpponent(move)) {
+					return true;
+				}
+			} else {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void Board::movePiece(const Square &from, const Square &to) {
