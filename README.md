@@ -13,6 +13,8 @@ To try out chesshole, simply clone the project (using --recursive to also get th
 # TODO
  - [x] Analysis: Implement the ability to step forward/backwards, skip to start/end
  - [x] Analysis: Implement pause/play feature
+ - [] General: make seperate movePiece functions for each piece (at least for rooks and kings, 
+ it needs to have extra features for castling rules, then this doesn't need to be checked inside the domove function)
  - [] Analysis: Scan for edge case failures (for example, I'm pretty sure that  a pawn capture leading to a promotion would fail currently.)
  - [] General: Add option to go back to main menu
  - [] PvP: implement PvP game

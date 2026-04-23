@@ -155,19 +155,12 @@ void Board::castle(const CastleSide &castleSide) {
 
 	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
 
-	switch (turn) {
-	case PlayerColor::white:
-		if (castleSide == CastleSide::kingSide) whiteCanCastleKingside = false;
-		if (castleSide == CastleSide::queenSide) whiteCanCastleQueenside = false;
-		break;
-
-	case PlayerColor::black:
-		if (castleSide == CastleSide::kingSide) blackCanCastleKingside = false;
-		if (castleSide == CastleSide::queenSide) blackCanCastleQueenside = false;
-		break;
-
-	default:
-		break;
+	if (turn == PlayerColor::white) {
+		whiteCanCastleKingside = false;
+		whiteCanCastleQueenside = false;
+	} else {
+		blackCanCastleKingside = false;
+		blackCanCastleQueenside = false;
 	}
 
 	if (castleSide == CastleSide::kingSide) {
@@ -201,22 +194,16 @@ void Board::castle(const CastleSide &castleSide) {
 void Board::unCastle(const CastleSide &castleSide) {
 	assert(castleSide == CastleSide::kingSide || castleSide == CastleSide::queenSide);
 
-	switch (turn) {
-	case PlayerColor::white:
-		if (castleSide == CastleSide::kingSide) whiteCanCastleKingside = true;
-		if (castleSide == CastleSide::queenSide) whiteCanCastleQueenside = true;
-		break;
+	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
 
-	case PlayerColor::black:
-		if (castleSide == CastleSide::kingSide) blackCanCastleKingside = true;
-		if (castleSide == CastleSide::queenSide) blackCanCastleQueenside = true;
-		break;
-
-	default:
-		break;
+	if (turn == PlayerColor::white) {
+		whiteCanCastleKingside = true;
+		whiteCanCastleQueenside = true;
+	} else {
+		blackCanCastleKingside = true;
+		blackCanCastleQueenside = true;
 	}
 
-	const Row row = (turn == PlayerColor::white) ? Row::_1 : Row::_8;
 
 	if (castleSide == CastleSide::kingSide) {
 		assert(cells[Column::E][row] == nullptr);
@@ -247,8 +234,7 @@ void Board::unCastle(const CastleSide &castleSide) {
 }
 
 void Board::drawOffer() const {
-	// To be implemented, make some kind of notification on the side of the
-	// board
+	// To be implemented, make some kind of notification on the side of the board
 	const std::string str = std::format("{} offered a draw!", playerColorCStr(turn));
 	std::cout << str.c_str() << std::endl;
 }
@@ -269,8 +255,8 @@ void Board::setGame(std::initializer_list<Move> iList) {
 
 const PlayerColor Board::getTurn() const { return turn; }
 const End Board::getGameEnd() const { return gameEnd; }
-// should make this pick a random image from the pieces folder instead of
-// hardcoding it
+
+// would be fun to make multiple drawings of each piece and make this pick a random img each time
 void Board::setPieces() {
 	// white piece
 	cells[Column::A][Row::_2] =
@@ -347,10 +333,7 @@ void Board::removePiece(const Square &square) { cells[square.col][square.row] = 
 
 const Square Board::findMove(Move &move) {
 	// This function tries to find all pieces which can do the move, which should be exactly one.
-	// Done by looping through the whole board and finding which piece can move to move.to.
-
-	// TODO: implement function for each piece similar to the getMoves functions
-	// but which has move.to as input argument
+	// Done by looping through the whole board and comparing each move to the move struct
 
 	const Column colStart = (move.from.col == Column::none) ? Column::A : move.from.col;
 	const Column colEnd = (move.from.col == Column::none) ? Column::H : move.from.col;
@@ -358,7 +341,6 @@ const Square Board::findMove(Move &move) {
 	const Row rowStart = (move.from.row == Row::none) ? Row::_1 : move.from.row;
 	const Row rowEnd = (move.from.row == Row::none) ? Row::_8 : move.from.row;
 
-	// starting with known piecename case:
 	for (Column col = colStart; col <= colEnd; ++col) {
 		for (Row row = rowStart; row <= rowEnd; ++row) {
 			const auto& piece = cells[col][row];
@@ -446,12 +428,8 @@ const bool Board::findKingMoves(Move& move, const std::unique_ptr<Piece>& piece)
 const bool Board::pieceMatchesMove(Move& move, const std::unique_ptr<Piece>& piece, const std::vector<Square>& ret) {
 	for (auto &entry : ret) {
 		if (entry == move.to) {
-			if (move.check) {
+			if (!(move.check) || moveChecksOpponent(move)) {
 				move.from = {piece->getCol(), piece->getRow()};
-				if (moveChecksOpponent(move)) {
-					return true;
-				}
-			} else {
 				return true;
 			}
 		}
@@ -468,18 +446,15 @@ void Board::movePiece(const Square &from, const Square &to) {
 	auto &fromPiece = cells[from.col][from.row];
 	auto &toPiece = cells[to.col][to.row];
 
-	// making sure there is a piece at the from position.
 	assert(fromPiece != nullptr);
 
-	// checking whether the color of the from piece is different from the to
-	// piece, if it exists.
 	if (toPiece != nullptr) {
 		assert(fromPiece->getPlayerColor() != toPiece->getPlayerColor());
 	}
 
-	// check if the move is a valid move for the piece.
-	// check if the move is allowed according to the position, e.g. don't move
-	// through pieces, dont check yourself etc.
+	if (fromPiece->getName() == PieceName::rook || fromPiece->getName() == PieceName::king) {
+
+	}
 
 	toPiece = std::move(fromPiece);
 	toPiece->setCol(to.col);
@@ -488,21 +463,15 @@ void Board::movePiece(const Square &from, const Square &to) {
 	return;
 }
 
-// This implementation only works for simple moves.
-// I need to create a Move type and fill it with the move information.
-// Every move should be findable using the from and to squares except for:
+// This function attempts to find the Move definition using the from and to squares, and attempts to do the move if it is valid
+// This implementation only works for simple moves, every move should be findable using the from and to squares except for:
 // - Promotions
 // - Resign
 // - Draw offers + responses
 //
 
 // With the current implementation, I also don't take into account:
-// - Checks
-// - Castling
-//
-// Then:
-// game.pushback(move);
-// gameStepFor();
+// - Castling through checks
 //
 void Board::tryMove(const Square &from, const Square &to) {
 	assert(from.col >= Column::A && from.col <= Column::H);
@@ -932,34 +901,22 @@ void Board::doMove(Move &move) {
 	auto &fromPiece = cells[move.from.col][move.from.row];
 
 	if (fromPiece->getName() == PieceName::king) {
-		switch (turn) {
-			case PlayerColor::white:
-				whiteCanCastleKingside = false;
-				whiteCanCastleQueenside = false;
-				break;
-			case PlayerColor::black:
-				blackCanCastleKingside = false;
-				blackCanCastleQueenside = false;
-				break;
-			default:
-				assert(0);
-				break;
+		if (turn == PlayerColor::white) {
+			whiteCanCastleKingside = false;
+			whiteCanCastleQueenside = false;
+		} else {
+			blackCanCastleKingside = false;
+			blackCanCastleQueenside = false;
 		}
 	}
 
 	if (fromPiece->getName() == PieceName::rook) {
-		switch (turn) {
-			case PlayerColor::white:
-				if (move.from.col == Column::A && move.from.row == Row::_1) whiteCanCastleQueenside = false;
-				if (move.from.col == Column::H && move.from.row == Row::_1) whiteCanCastleKingside = false;
-				break;
-			case PlayerColor::black:
-				if (move.from.col == Column::A && move.from.row == Row::_8) blackCanCastleQueenside = false;
-				if (move.from.col == Column::H && move.from.row == Row::_8) blackCanCastleKingside = false;
-				break;
-			default:
-				assert(0);
-				break;
+		if (turn == PlayerColor::white) {
+			if (move.from.col == Column::A && move.from.row == Row::_1) whiteCanCastleQueenside = false;
+			if (move.from.col == Column::H && move.from.row == Row::_1) whiteCanCastleKingside = false;
+		} else {
+			if (move.from.col == Column::A && move.from.row == Row::_8) blackCanCastleQueenside = false;
+			if (move.from.col == Column::H && move.from.row == Row::_8) blackCanCastleKingside = false;
 		}
 	}
 				
@@ -1020,35 +977,23 @@ void Board::undoMove(Move &move) {
 	}
 	auto &toPiece = cells[move.to.col][move.to.row];
 
-	if (toPiece != nullptr && toPiece->getName() == PieceName::king) {
-		switch (turn) {
-			case PlayerColor::white:
-				whiteCanCastleKingside = true;						//this is gonna cause bugs
-				whiteCanCastleQueenside = true;
-				break;
-			case PlayerColor::black:
-				blackCanCastleKingside = true;
-				blackCanCastleQueenside = true;
-				break;
-			default:
-				assert(0);
-				break;
+	if (toPiece->getName() == PieceName::king) {
+		if (turn == PlayerColor::white) {
+			whiteCanCastleKingside = true;				// this is gonna cause bug when this function is called to undo a king move
+			whiteCanCastleQueenside = true;				// when in a previous move it already lost the ability to castle
+		} else {
+			blackCanCastleKingside = true;
+			blackCanCastleQueenside = true;
 		}
 	}
 
-	if (toPiece != nullptr && toPiece->getName() == PieceName::rook) {
-		switch (turn) {
-			case PlayerColor::white:
-				if (move.from.col == Column::A && move.from.row == Row::_1) whiteCanCastleQueenside = true;
-				if (move.from.col == Column::H && move.from.row == Row::_1) whiteCanCastleKingside = true;
-				break;
-			case PlayerColor::black:
-				if (move.from.col == Column::A && move.from.row == Row::_8) blackCanCastleQueenside = true;
-				if (move.from.col == Column::H && move.from.row == Row::_8) blackCanCastleKingside = true;
-				break;
-			default:
-				assert(0);
-				break;
+	if (toPiece->getName() == PieceName::rook) {
+		if (turn == PlayerColor::white) {
+			if (move.from.col == Column::A && move.from.row == Row::_1) whiteCanCastleQueenside = true;
+			if (move.from.col == Column::H && move.from.row == Row::_1) whiteCanCastleKingside = true;
+		} else {
+			if (move.from.col == Column::A && move.from.row == Row::_8) blackCanCastleQueenside = true;
+			if (move.from.col == Column::H && move.from.row == Row::_8) blackCanCastleKingside = true;
 		}
 	}
 				
@@ -1065,14 +1010,10 @@ const bool Board::moveChecksSelf(const Move &move) {
 }
 
 const bool Board::moveChecksOpponent(const Move &move) {
-	switch (turn) {
-		case PlayerColor::white:
-			return moveChecks(move, PlayerColor::black);
-		case PlayerColor::black:
-			return moveChecks(move, PlayerColor::white);
-		default:
-			assert(0);
-			return false;
+	if (turn == PlayerColor::white)	{
+		return moveChecks(move, PlayerColor::black);
+	} else {
+		return moveChecks(move, PlayerColor::white);
 	}
 }
 
@@ -1091,7 +1032,6 @@ const bool Board::moveChecks(const Move &move, const PlayerColor player) {
 	}
 	assert(king.col != Column::none && king.row != Row::none);
 
-	bool f = false;
 	std::vector<Square> ret{};
 	for (Column col = Column::A; col <= Column::H; ++col) {
 		for (Row row = Row::_1; row <= Row::_8; ++row) {
@@ -1132,7 +1072,9 @@ const bool Board::moveChecks(const Move &move, const PlayerColor player) {
 
 			for (auto &e : ret) {
 				if (e == king) {
-					f = true;
+					gameStepBack();
+					game.pop_back();
+					return false;
 				}
 			}
 			ret.clear();
@@ -1141,7 +1083,7 @@ const bool Board::moveChecks(const Move &move, const PlayerColor player) {
 
 	gameStepBack();
 	game.pop_back();
-	return f;
+	return false;
 }
 
 void Board::gameSkipBack() {
